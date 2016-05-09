@@ -1,4 +1,4 @@
-package peer;
+package relay;
 
 import peer.utils.FileUtils;
 
@@ -7,12 +7,12 @@ import java.io.*;
 /**
  * Peer of the Distributed Backup Service Over The Internet
  */
-public class Peer {
+public class Relay {
 
     /**
-     * Instance of the peer
+     * Instance of the relay server
      */
-    private static Peer instance;
+    private static Relay instance;
 
     /**
      * String to hold the name of the server key.
@@ -25,26 +25,26 @@ public class Peer {
      * @param args arguments sent to the console
      */
     public static void main(String[] args) {
-        instance = new Peer();
+        instance = new Relay();
     }
 
     /**
-     * Get the instance of the peer
+     * Get the instance of the relay
      *
-     * @return instance of the peer
+     * @return instance of the relay
      */
-    public static Peer getInstance() {
+    public static Relay getInstance() {
         return instance;
     }
 
     /**
-     * Constructor of Peer
+     * Constructor of Relay
      */
-    private Peer() {
+    private Relay() {
         // Configure SSL
         createKey();
-        System.setProperty("javax.net.ssl.trustStore", KEY_STORE);
-        System.setProperty("javax.net.ssl.trustStorePassword", "123456");
+        System.setProperty("javax.net.ssl.keyStore", KEY_STORE);
+        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
     }
 
     /**
