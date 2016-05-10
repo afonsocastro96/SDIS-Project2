@@ -1,9 +1,11 @@
 package feup.sdis;
 
+import feup.sdis.logger.Logger;
 import feup.sdis.utils.FileUtils;
 
-import java.io.*;
-import java.util.UUID;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
@@ -11,14 +13,19 @@ import java.util.UUID;
 public class Relay {
 
     /**
+     * String to hold the name of the server key.
+     */
+    private static final String KEY_STORE = "security" + File.separator + "serverKeyStore";
+
+    /**
      * Instance of the relay server
      */
     private static Relay instance;
 
     /**
-     * String to hold the name of the server key.
+     * Logger of the relay server
      */
-    private static final String KEY_STORE = "security" + File.separator + "serverKeyStore";
+    private final Logger logger;
 
     /**
      * Main method of the program
@@ -34,7 +41,7 @@ public class Relay {
      * @return instance of the relay
      */
     public static Relay getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new Relay();
         return instance;
     }
@@ -43,6 +50,9 @@ public class Relay {
      * Constructor of Relay
      */
     private Relay() {
+        // Configure Logger
+        logger = new Logger();
+
         // Configure SSL
         createKey();
         System.setProperty("javax.net.ssl.keyStore", KEY_STORE);
@@ -50,11 +60,20 @@ public class Relay {
     }
 
     /**
+     * Get the logger
+     *
+     * @return logger
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+
+    /**
      * Create the key file
      */
     private void createKey() {
         File keyFile = new File(KEY_STORE);
-        if(keyFile.exists())
+        if (keyFile.exists())
             return;
 
         if (!keyFile.getParentFile().exists())
