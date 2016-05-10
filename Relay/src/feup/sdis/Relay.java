@@ -1,11 +1,13 @@
 package feup.sdis;
 
+import feup.sdis.logger.Level;
 import feup.sdis.logger.Logger;
 import feup.sdis.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
@@ -32,7 +34,8 @@ public class Relay {
      *
      * @param args arguments sent to the console
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+        instance = new Relay();
     }
 
     /**
@@ -41,17 +44,15 @@ public class Relay {
      * @return instance of the relay
      */
     public static Relay getInstance() {
-        if (instance == null)
-            instance = new Relay();
         return instance;
     }
 
     /**
      * Constructor of Relay
      */
-    private Relay() {
+    private Relay() throws FileNotFoundException, UnsupportedEncodingException {
         // Configure Logger
-        logger = new Logger();
+        logger = new Logger("Relay", Level.DEBUG);
 
         // Configure SSL
         createKey();

@@ -41,7 +41,7 @@ public class Logger {
     public Logger(final String name, final Level minLevel) throws FileNotFoundException, UnsupportedEncodingException {
         this.name = name + ".log";
         this.minLevel = minLevel;
-        this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(name, true), "UTF-8"));
+        this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.name, true), "UTF-8"));
         this.dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
 
