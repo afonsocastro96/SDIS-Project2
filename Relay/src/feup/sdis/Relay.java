@@ -3,6 +3,7 @@ package feup.sdis;
 import feup.sdis.utils.FileUtils;
 
 import java.io.*;
+import java.util.UUID;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
@@ -25,7 +26,6 @@ public class Relay {
      * @param args arguments sent to the console
      */
     public static void main(String[] args) {
-        instance = new Relay();
     }
 
     /**
@@ -34,6 +34,8 @@ public class Relay {
      * @return instance of the relay
      */
     public static Relay getInstance() {
+        if(instance == null)
+            instance = new Relay();
         return instance;
     }
 

@@ -25,7 +25,6 @@ public class Peer {
      * @param args arguments sent to the console
      */
     public static void main(String[] args) {
-        instance = new Peer();
     }
 
     /**
@@ -34,6 +33,8 @@ public class Peer {
      * @return instance of the peer
      */
     public static Peer getInstance() {
+        if(instance == null)
+            instance = new Peer();
         return instance;
     }
 
