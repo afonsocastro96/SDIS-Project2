@@ -1,4 +1,4 @@
-package peer.utils;
+package feup.sdis.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

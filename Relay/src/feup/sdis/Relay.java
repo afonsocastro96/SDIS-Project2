@@ -1,6 +1,6 @@
-package relay;
+package feup.sdis;
 
-import peer.utils.FileUtils;
+import feup.sdis.utils.FileUtils;
 
 import java.io.*;
 

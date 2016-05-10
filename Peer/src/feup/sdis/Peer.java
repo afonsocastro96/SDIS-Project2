@@ -1,6 +1,6 @@
-package peer;
+package feup.sdis;
 
-import peer.utils.FileUtils;
+import feup.sdis.utils.FileUtils;
 
 import java.io.*;
 
@@ -51,7 +51,7 @@ public class Peer {
      * Create the key file
      */
     private void createKey() {
-        File keyFile = new File(KEY_STORE);
+        final File keyFile = new File(KEY_STORE);
         if(keyFile.exists())
             return;
 
@@ -61,7 +61,7 @@ public class Peer {
         // Saving the Public key in a file
         try {
             FileUtils.copyStream(getClass().getResourceAsStream("/resources/serverKeyStore"), new FileOutputStream(keyFile));
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             System.out.println("Error while copying the server key store! ");
             e.printStackTrace();
         }
