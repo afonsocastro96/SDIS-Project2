@@ -131,13 +131,13 @@ public class Relay extends Node {
             properties.load(input);
 
             // Logger
-            Level logLevel = getLogger().getLevel();
+            String logLevel = properties.getProperty("log");
             try {
-                logLevel = Level.valueOf(properties.getProperty("log").toUpperCase());
+                getLogger().setLevel(Level.valueOf(logLevel.toUpperCase()));
             } catch (IllegalArgumentException ignored) {
-                getLogger().log(Level.WARNING, "Invalid value for log property. Using default " + logLevel);
+                getLogger().log(Level.WARNING, "Invalid value for log property. Using default " + getLogger().getLevel());
             }
-            getLogger().setLevel(logLevel);
+            getLogger().log(Level.DEBUG, "Log level - " + logLevel);
 
             // Database
             String dbType = properties.getProperty("dbtype"),
@@ -145,9 +145,16 @@ public class Relay extends Node {
                     dbName = properties.getProperty("dbname"),
                     dbUser = properties.getProperty("dbuser"),
                     dbPassword = properties.getProperty("dbpassword");
+            getLogger().log(Level.DEBUG, "Database type - " + dbType);
+            getLogger().log(Level.DEBUG, "Database host - " + dbHost);
+            getLogger().log(Level.DEBUG, "Database name - " + dbName);
+            getLogger().log(Level.DEBUG, "Database user - " + dbUser);
+            getLogger().log(Level.DEBUG, "Database password - " + dbPassword);
+
             int dbPort;
             try {
                 dbPort = Integer.parseInt(properties.getProperty("dbport"));
+                getLogger().log(Level.DEBUG, "Database port - " + dbPort);
             } catch (NumberFormatException ignored) {
                 getLogger().log(Level.FATAL, "Invalid value for database port property.");
                 return false;
