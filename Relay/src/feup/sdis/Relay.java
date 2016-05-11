@@ -192,6 +192,7 @@ public class Relay extends Node {
             server = new SSLServer(host, port);
             if(server.getSocket() == null)
                 return false;
+            new Thread(server).run();
 
             DatabaseType databaseType;
             try {
