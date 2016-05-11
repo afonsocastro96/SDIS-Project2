@@ -33,9 +33,11 @@ public class Relay extends Node {
         // Starting the peer
         getLogger().log(Level.INFO, "Starting the server.");
 
-        if(!instance.createConfig())
+        if(!getInstance().createConfig())
             return;
-        if(!instance.loadConfig())
+        if(!getInstance().loadConfig())
+            return;
+        if(!getInstance().getDatabase().connect())
             return;
 
         // Start the server
@@ -52,6 +54,14 @@ public class Relay extends Node {
      */
     public static Relay getInstance() {
         return instance;
+    }
+
+    /**
+     * Get the database of the server
+     * @return database of the server
+     */
+    public Database getDatabase() {
+        return database;
     }
 
     /**
