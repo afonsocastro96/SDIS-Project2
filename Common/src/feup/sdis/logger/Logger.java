@@ -18,7 +18,7 @@ public class Logger {
     /**
      * Minimum level of the messages to be logged
      */
-    private final Level minLevel;
+    private Level minLevel;
 
     /**
      * File writer
@@ -33,16 +33,43 @@ public class Logger {
     /**
      * Constructor of the Logger
      *
+     * @param name name of the logger
+     * @throws FileNotFoundException        if the file is not writable or is a directory
+     * @throws UnsupportedEncodingException if the encoding does not exist
+     */
+    public Logger(final String name) throws FileNotFoundException, UnsupportedEncodingException {
+        this(name, Level.INFO);
+    }
+
+    /**
+     * Constructor of the Logger
+     *
      * @param name     name of the logger
      * @param minLevel minimum level to log the message
      * @throws FileNotFoundException        if the file is not writable or is a directory
      * @throws UnsupportedEncodingException if the encoding does not exist
      */
     public Logger(final String name, final Level minLevel) throws FileNotFoundException, UnsupportedEncodingException {
-        this.name = name + ".log";
+        this.name = name;
         this.minLevel = minLevel;
-        this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.name, true), "UTF-8"));
+        this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.name + ".log", true), "UTF-8"));
         this.dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    }
+
+    /**
+     * Get the logger level
+     * @return logger level
+     */
+    public Level getLevel() {
+        return minLevel;
+    }
+
+    /**
+     * Set the minimum level to log the messages
+     * @param minLevel minimum level to log the messages
+     */
+    public void setLevel(final Level minLevel) {
+        this.minLevel = minLevel;
     }
 
     /**
@@ -52,13 +79,13 @@ public class Logger {
      * @param message message to be logged
      */
     public void log(final Level level, final String message) {
-        if(!level.isWorseOrEqual(minLevel))
+        if (!level.isWorseOrEqual(minLevel))
             return;
 
-        String logRecord = String.format("%s [%s] %s", dateFormat.format(new Date()), level.toString(), message);
+        String logRecord = String.format("%s [%s] %s\n", dateFormat.format(new Date()), level.toString(), message);
 
         writer.write(logRecord);
         writer.flush();
-        System.out.print(logRecord);
+        System.out.print("[" + name + "] " + logRecord);
     }
 }

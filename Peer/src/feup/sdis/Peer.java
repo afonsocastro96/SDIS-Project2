@@ -1,13 +1,11 @@
 package feup.sdis;
 
-import feup.sdis.utils.FileUtils;
-
-import java.io.*;
+import feup.sdis.logger.Level;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
  */
-public class Peer {
+public class Peer extends Node {
 
     /**
      * Instance of the peer
@@ -15,16 +13,42 @@ public class Peer {
     private static Peer instance;
 
     /**
-     * String to hold the name of the server key.
-     */
-    private static final String KEY_STORE = "security" + File.separator + "serverKeyStore";
-
-    /**
      * Main method of the program
      *
      * @param args arguments sent to the console
      */
     public static void main(String[] args) {
+        // Parse the arguments
+        Level minLevel = Level.WARNING;
+        for (String arg : args) {
+            switch (arg) {
+                case "log=DEBUG":
+                    minLevel = Level.DEBUG;
+                    break;
+                case "log=INFO":
+                    minLevel = Level.INFO;
+                    break;
+                case "log=WARNING":
+                    minLevel = Level.WARNING;
+                    break;
+                case "log=ERROR":
+                    minLevel = Level.ERROR;
+                    break;
+                case "log=FATAL":
+                    minLevel = Level.FATAL;
+                    break;
+            }
+        }
+        instance = new Peer(minLevel);
+
+        // Starting the peer
+        getLogger().log(Level.INFO, "Starting the peer");
+
+        // Start the peer
+        getLogger().log(Level.INFO, "Service started");
+
+        // Stop the peer
+        getLogger().log(Level.INFO, "Service stopped");
     }
 
     /**
@@ -33,38 +57,19 @@ public class Peer {
      * @return instance of the peer
      */
     public static Peer getInstance() {
-        if(instance == null)
-            instance = new Peer();
         return instance;
     }
 
     /**
      * Constructor of Peer
+     *
+     * @param minLevel minimum level to log the messages
      */
-    private Peer() {
-        // Configure SSL
-        createKey();
+    private Peer(final Level minLevel) {
+        super("Peer", minLevel);
+
+        // Environment variables for SSL
         System.setProperty("javax.net.ssl.trustStore", KEY_STORE);
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-    }
-
-    /**
-     * Create the key file
-     */
-    private void createKey() {
-        final File keyFile = new File(KEY_STORE);
-        if(keyFile.exists())
-            return;
-
-        if (!keyFile.getParentFile().exists())
-            keyFile.getParentFile().mkdirs();
-
-        // Saving the Public key in a file
-        try {
-            FileUtils.copyStream(getClass().getResourceAsStream("/resources/serverKeyStore"), new FileOutputStream(keyFile));
-        } catch (final FileNotFoundException e) {
-            System.out.println("Error while copying the server key store! ");
-            e.printStackTrace();
-        }
     }
 }

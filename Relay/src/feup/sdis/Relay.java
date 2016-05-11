@@ -1,23 +1,16 @@
 package feup.sdis;
 
+import feup.sdis.database.Database;
+import feup.sdis.database.types.DatabaseType;
 import feup.sdis.logger.Level;
-import feup.sdis.logger.Logger;
-import feup.sdis.utils.FileUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.util.Properties;
 
 /**
- * Peer of the Distributed Backup Service Over The Internet
+ * Relay of the Distributed Backup Service Over The Internet
  */
-public class Relay {
-
-    /**
-     * String to hold the name of the server key.
-     */
-    private static final String KEY_STORE = "security" + File.separator + "serverKeyStore";
+public class Relay extends Node {
 
     /**
      * Instance of the relay server
@@ -25,17 +18,31 @@ public class Relay {
     private static Relay instance;
 
     /**
-     * Logger of the relay server
+     * Database of the relay server
      */
-    private final Logger logger;
+    private Database database;
 
     /**
      * Main method of the program
      *
      * @param args arguments sent to the console
      */
-    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void main(String[] args) {
         instance = new Relay();
+
+        // Starting the peer
+        getLogger().log(Level.INFO, "Starting the server.");
+
+        if(!instance.createConfig())
+            return;
+        if(!instance.loadConfig())
+            return;
+
+        // Start the server
+        getLogger().log(Level.INFO, "Service started.");
+
+        // Stop the server
+        getLogger().log(Level.INFO, "Service stopped.");
     }
 
     /**
@@ -50,42 +57,124 @@ public class Relay {
     /**
      * Constructor of Relay
      */
-    private Relay() throws FileNotFoundException, UnsupportedEncodingException {
-        // Configure Logger
-        logger = new Logger("Relay", Level.DEBUG);
+    private Relay() {
+        super("Relay");
 
-        // Configure SSL
-        createKey();
+        // Environment variables for SSL
         System.setProperty("javax.net.ssl.keyStore", KEY_STORE);
         System.setProperty("javax.net.ssl.keyStorePassword", "123456");
     }
 
     /**
-     * Get the logger
+     * Create the configuration file
      *
-     * @return logger
+     * @return true if successful, false otherwise
      */
-    public Logger getLogger() {
-        return logger;
+    @Override
+    boolean createConfig() {
+        File configFile = new File(CONFIG_FILE);
+        if(configFile.exists()) return true;
+
+        Properties properties = new Properties();
+        OutputStream output = null;
+
+        try {
+            if(!configFile.createNewFile()) {
+                getLogger().log(Level.FATAL, "Could not create the configuration file.");
+                return false;
+            }
+
+            output = new FileOutputStream(configFile);
+
+            // Set the properties values
+            properties.setProperty("log", "info");
+            properties.setProperty("dbtype", "mysql");
+            properties.setProperty("dbhost", "localhost");
+            properties.setProperty("dbport", "3306");
+            properties.setProperty("dbname", "database");
+            properties.setProperty("dbuser", "username");
+            properties.setProperty("dbpassword", "password");
+
+            // Save the file
+            properties.store(output, null);
+
+            getLogger().log(Level.INFO, "Configuration file has been created.");
+            return true;
+        } catch (IOException e) {
+            getLogger().log(Level.FATAL, "Could not create the configuration file. " + e.getMessage());
+            return false;
+        } finally {
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    getLogger().log(Level.FATAL, "Could not close the configuration file. " + e.getMessage());
+                }
+            }
+        }
     }
 
     /**
-     * Create the key file
+     * Load the configuration file
+     *
+     * @return true if successful, false otherwise
      */
-    private void createKey() {
-        File keyFile = new File(KEY_STORE);
-        if (keyFile.exists())
-            return;
+    @Override
+    boolean loadConfig() {
+        Properties properties = new Properties();
+        InputStream input = null;
 
-        if (!keyFile.getParentFile().exists())
-            keyFile.getParentFile().mkdirs();
-
-        // Saving the Public key in a file
         try {
-            FileUtils.copyStream(getClass().getResourceAsStream("/resources/serverKeyStore"), new FileOutputStream(keyFile));
-        } catch (FileNotFoundException e) {
-            System.out.println("Error while copying the server key store! ");
-            e.printStackTrace();
+            input = new FileInputStream(CONFIG_FILE);
+
+            // Load the properties file
+            properties.load(input);
+
+            // Logger
+            Level logLevel = getLogger().getLevel();
+            try {
+                logLevel = Level.valueOf(properties.getProperty("log").toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+                getLogger().log(Level.WARNING, "Invalid value for log property. Using default " + logLevel);
+            }
+            getLogger().setLevel(logLevel);
+
+            // Database
+            String dbType = properties.getProperty("dbtype"),
+                    dbHost = properties.getProperty("dbhost"),
+                    dbName = properties.getProperty("dbname"),
+                    dbUser = properties.getProperty("dbuser"),
+                    dbPassword = properties.getProperty("dbpassword");
+            int dbPort;
+            try {
+                dbPort = Integer.parseInt(properties.getProperty("dbport"));
+            } catch (NumberFormatException ignored) {
+                getLogger().log(Level.FATAL, "Invalid value for database port property.");
+                return false;
+            }
+
+            DatabaseType databaseType;
+            try {
+                databaseType = DatabaseType.valueOf(dbType.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+                getLogger().log(Level.FATAL, "Invalid value for database type property.");
+                return false;
+            }
+            database = Database.createDatabase(databaseType, dbHost, dbPort, dbName, dbUser, dbPassword);
+
+            getLogger().log(Level.INFO, "Configuration has been loaded.");
+            return true;
+        } catch (IOException e) {
+            getLogger().log(Level.FATAL, "Could not load the configuration file. " + e.getMessage());
+            return false;
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    getLogger().log(Level.FATAL, "Could not close the configuration file. " + e.getMessage());
+                }
+            }
         }
     }
 }
