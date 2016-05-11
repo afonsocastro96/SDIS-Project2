@@ -1,12 +1,11 @@
 package feup.sdis;
 
+import feup.sdis.logger.Level;
 import feup.sdis.logger.Logger;
 import feup.sdis.utils.FileUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.util.Scanner;
 
 /**
  * Node class that is common to every computer in the network
@@ -49,6 +48,24 @@ public abstract class Node {
      */
     public static Logger getLogger() {
         return logger;
+    }
+
+    /**
+     * Get the BIOS serial number
+     * @return BIOS serial number
+     */
+    static String getBiosSerialNumber() {
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec(new String[] { "wmic", "bios", "get", "serialnumber" });
+            process.getOutputStream().close();
+        } catch (IOException e) {
+            getLogger().log(Level.FATAL, "Could not retrieve the BIOS serial number. " + e.getMessage());
+            return null;
+        }
+        final Scanner sc = new Scanner(process.getInputStream());
+        sc.next();
+        return sc.next();
     }
 
     /**

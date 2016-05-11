@@ -4,7 +4,9 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 
 import java.io.*;
+import java.net.NetworkInterface;
 import java.util.Properties;
+import java.util.Scanner;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
@@ -17,6 +19,11 @@ public class Peer extends Node {
     private static Peer instance;
 
     /**
+     * Id of the peer
+     */
+    private final String id;
+
+    /**
      * Connection channel to the relay server
      */
     private SSLChannel channel;
@@ -27,10 +34,15 @@ public class Peer extends Node {
      * @param args arguments sent to the console
      */
     public static void main(String[] args) {
-        instance = new Peer();
+        // ID of the peer
+        final String id = getBiosSerialNumber();
+        if(id == null)
+            return;
+
+        instance = new Peer(id);
 
         // Starting the peer
-        getLogger().log(Level.INFO, "Starting the service.");
+        getLogger().log(Level.INFO, "Starting the service of " + getInstance().getId());
 
         if(!getInstance().createConfig())
             return;
@@ -55,13 +67,25 @@ public class Peer extends Node {
 
     /**
      * Constructor of Peer
+     *
+     * @param id id of the peer
      */
-    private Peer() {
+    private Peer(final String id) {
         super("Peer");
+
+        this.id = id;
 
         // Environment variables for SSL
         System.setProperty("javax.net.ssl.trustStore", KEY_STORE);
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");
+    }
+
+    /**
+     * Get the ID of the peer
+     * @return id of the peer
+     */
+    public String getId() {
+        return id;
     }
 
     /**
