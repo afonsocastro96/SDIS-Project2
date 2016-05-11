@@ -1,7 +1,6 @@
 package feup.sdis.database;
 
 import feup.sdis.Node;
-import feup.sdis.Relay;
 import feup.sdis.database.types.DatabaseType;
 import feup.sdis.database.types.MySQL;
 import feup.sdis.database.types.OracleSQL;
@@ -9,7 +8,6 @@ import feup.sdis.database.types.PostgreSQL;
 import feup.sdis.logger.Level;
 
 import java.sql.*;
-import java.util.List;
 
 /**
  * Database Object.
@@ -43,8 +41,9 @@ public abstract class Database {
 
     /**
      * Constructor of Database
-     * @param driver driver of the database
-     * @param url url for connecting to the database
+     *
+     * @param driver   driver of the database
+     * @param url      url for connecting to the database
      * @param username username of the database
      * @param password password of the database
      */
@@ -57,17 +56,24 @@ public abstract class Database {
 
     /**
      * Create a database
-     * @param type type of the database
+     *
+     * @param type     type of the database
+     * @param hostname hostname of the database
+     * @param port     port of the database
+     * @param database database of the database
+     * @param schema   schema of the database
+     * @param username username of the database
+     * @param password password of the database
      * @return created database
      */
-    public static Database createDatabase(final DatabaseType type, final String hostname, final int port, final String database, final String username, final String password) {
+    public static Database createDatabase(final DatabaseType type, final String hostname, final int port, final String database, final String schema, final String username, final String password) {
         switch (type) {
             case MYSQL:
                 return new MySQL(hostname, port, database, username, password);
             case ORACLE:
                 return new OracleSQL(hostname, port, database, username, password);
             case POSTGRES:
-                return new PostgreSQL(hostname, port, database, username, password);
+                return new PostgreSQL(hostname, port, database, schema, username, password);
             default:
                 return null;
         }
@@ -78,7 +84,7 @@ public abstract class Database {
      */
     public boolean connect() {
         try {
-            if(connection != null && !connection.isClosed()) {
+            if (connection != null && !connection.isClosed()) {
                 Node.getLogger().log(Level.WARNING, "Connection already established with the database.");
                 return false;
             }
@@ -99,7 +105,7 @@ public abstract class Database {
      */
     public boolean close() {
         try {
-            if(connection != null)
+            if (connection != null)
                 connection.close();
 
             Node.getLogger().log(Level.INFO, "Closed connection with the database.");
@@ -112,11 +118,12 @@ public abstract class Database {
 
     /**
      * Check the connection to the database
+     *
      * @return true if closed, false otherwise
      */
     public boolean isClosed() {
         try {
-            if(connection != null)
+            if (connection != null)
                 return connection.isClosed();
         } catch (final SQLException e) {
             Node.getLogger().log(Level.ERROR, "Could not check the connection with the database. " + e.getMessage());
@@ -126,6 +133,7 @@ public abstract class Database {
 
     /**
      * Close a statement
+     *
      * @param statement statement to be closed
      */
     public void close(final Statement statement) {
@@ -139,6 +147,7 @@ public abstract class Database {
 
     /**
      * Close a ResultSet
+     *
      * @param resultSet result set to be closed
      */
     public void close(final ResultSet resultSet) {
@@ -152,7 +161,8 @@ public abstract class Database {
 
     /**
      * Query Database
-     * @param sql sql query
+     *
+     * @param sql        sql query
      * @param parameters parameters of the prepared statement
      * @return result of the given query
      */
@@ -178,7 +188,8 @@ public abstract class Database {
 
     /**
      * Update Database
-     * @param sql sql statement
+     *
+     * @param sql        sql statement
      * @param parameters parameters of the prepared statement
      * @return number of rows updated
      */

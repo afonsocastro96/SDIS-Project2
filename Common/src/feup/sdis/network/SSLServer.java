@@ -9,6 +9,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -78,27 +79,37 @@ public class SSLServer implements Runnable {
     }
 
     /**
+     * Open the server
+     */
+    public void open() {
+        opened.set(true);
+        new Thread(this).start();
+    }
+
+    /**
      * Close the server
      */
-    public void closeServer() {
+    public void close() {
         opened.set(false);
     }
 
     /**
-     * Runner of the server
+     * Runner of the server to accept new connections.
      */
     @Override
     public void run() {
-        opened.set(true);
+        Node.getLogger().log(Level.INFO, "Accepting up to " + MAX_CONNECTIONS + " concurrent connections.");
 
         while(opened.get()) {
+            Node.getLogger().log(Level.DEBUG, "Waiting a new connection (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
             try {
-                Node.getLogger().log(Level.DEBUG, "Waiting new connections (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
+                serverSocket.setSoTimeout(1000); // 1 second to expire the accept
                 SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
                 connections.add(connectionSocket);
                 Node.getLogger().log(Level.INFO, "Accepted incoming connection from " + connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort());
+            } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
-                Node.getLogger().log(Level.ERROR, "Could not accept a foreign connection. " + e.getMessage());
+                Node.getLogger().log(Level.DEBUG, "Could not accept a connection. " + e.getMessage());
             }
         }
     }

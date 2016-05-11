@@ -30,7 +30,7 @@ public class Peer extends Node {
         instance = new Peer();
 
         // Starting the peer
-        getLogger().log(Level.INFO, "Starting the peer.");
+        getLogger().log(Level.INFO, "Starting the service.");
 
         if(!getInstance().createConfig())
             return;

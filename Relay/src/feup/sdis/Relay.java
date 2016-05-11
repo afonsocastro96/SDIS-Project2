@@ -36,17 +36,20 @@ public class Relay extends Node {
         instance = new Relay();
 
         // Starting the peer
-        getLogger().log(Level.INFO, "Starting the server.");
+        getLogger().log(Level.INFO, "Starting the service.");
 
         if(!getInstance().createConfig())
             return;
         if(!getInstance().loadConfig())
             return;
-        //if(!getInstance().getDatabase().connect())
-        //    return;
+        if(!getInstance().getDatabase().connect())
+            return;
+        getInstance().getServer().open();
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
+
+        getInstance().getServer().close();
 
         // Stop the server
         getLogger().log(Level.INFO, "Service stopped.");
@@ -81,6 +84,14 @@ public class Relay extends Node {
     }
 
     /**
+     * Get the server
+     * @return server
+     */
+    public SSLServer getServer() {
+        return server;
+    }
+
+    /**
      * Create the configuration file
      *
      * @return true if successful, false otherwise
@@ -109,6 +120,7 @@ public class Relay extends Node {
             properties.setProperty("dbhost", "localhost");
             properties.setProperty("dbport", "3306");
             properties.setProperty("dbname", "database");
+            properties.setProperty("dbschema", "schema");
             properties.setProperty("dbuser", "username");
             properties.setProperty("dbpassword", "password");
 
@@ -173,11 +185,13 @@ public class Relay extends Node {
             String dbType = properties.getProperty("dbtype"),
                     dbHost = properties.getProperty("dbhost"),
                     dbName = properties.getProperty("dbname"),
+                    dbSchema = properties.getProperty("dbschema"),
                     dbUser = properties.getProperty("dbuser"),
                     dbPassword = properties.getProperty("dbpassword");
             getLogger().log(Level.DEBUG, "Database type - " + dbType);
             getLogger().log(Level.DEBUG, "Database host - " + dbHost);
             getLogger().log(Level.DEBUG, "Database name - " + dbName);
+            getLogger().log(Level.DEBUG, "Database schema - " + dbSchema);
             getLogger().log(Level.DEBUG, "Database user - " + dbUser);
             getLogger().log(Level.DEBUG, "Database password - " + dbPassword);
 
@@ -192,7 +206,6 @@ public class Relay extends Node {
             server = new SSLServer(host, port);
             if(server.getSocket() == null)
                 return false;
-            new Thread(server).run();
 
             DatabaseType databaseType;
             try {
@@ -201,7 +214,7 @@ public class Relay extends Node {
                 getLogger().log(Level.FATAL, "Invalid value for database type property.");
                 return false;
             }
-            database = Database.createDatabase(databaseType, dbHost, dbPort, dbName, dbUser, dbPassword);
+            database = Database.createDatabase(databaseType, dbHost, dbPort, dbName, dbSchema, dbUser, dbPassword);
 
             getLogger().log(Level.INFO, "Configuration has been loaded.");
             return true;
