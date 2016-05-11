@@ -2,6 +2,7 @@ package feup.sdis;
 import feup.sdis.database.Database;
 import feup.sdis.database.types.DatabaseType;
 import feup.sdis.logger.Level;
+import feup.sdis.network.SSLServer;
 
 
 import java.io.*;
@@ -15,6 +16,11 @@ public class Relay extends Node {
      * Instance of the relay server
      */
     private static Relay instance;
+
+    /**
+     * SSL server
+     */
+    private SSLServer server;
 
     /**
      * Database of the relay server
@@ -36,8 +42,8 @@ public class Relay extends Node {
             return;
         if(!getInstance().loadConfig())
             return;
-        if(!getInstance().getDatabase().connect())
-            return;
+        //if(!getInstance().getDatabase().connect())
+        //    return;
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
@@ -97,6 +103,8 @@ public class Relay extends Node {
 
             // Set the properties values
             properties.setProperty("log", "info");
+            properties.setProperty("host", "127.0.0.1");
+            properties.setProperty("port", "21852");
             properties.setProperty("dbtype", "mysql");
             properties.setProperty("dbhost", "localhost");
             properties.setProperty("dbport", "3306");
@@ -148,6 +156,19 @@ public class Relay extends Node {
             }
             getLogger().log(Level.DEBUG, "Log level - " + logLevel);
 
+            // Server socket
+            String host = properties.getProperty("host");
+            getLogger().log(Level.DEBUG, "Server host - " + host);
+
+            int port;
+            try {
+                port = Integer.parseInt(properties.getProperty("port"));
+                getLogger().log(Level.DEBUG, "Server port - " + port);
+            } catch (NumberFormatException ignored) {
+                getLogger().log(Level.FATAL, "Invalid value for server port property.");
+                return false;
+            }
+
             // Database
             String dbType = properties.getProperty("dbtype"),
                     dbHost = properties.getProperty("dbhost"),
@@ -168,6 +189,9 @@ public class Relay extends Node {
                 getLogger().log(Level.FATAL, "Invalid value for database port property.");
                 return false;
             }
+            server = new SSLServer(host, port);
+            if(server.getSocket() == null)
+                return false;
 
             DatabaseType databaseType;
             try {

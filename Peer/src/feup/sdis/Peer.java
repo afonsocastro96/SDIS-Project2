@@ -1,7 +1,7 @@
 package feup.sdis;
 
 import feup.sdis.logger.Level;
-import feup.sdis.network.SecureChannel;
+import feup.sdis.network.SSLChannel;
 
 import java.io.*;
 import java.util.Properties;
@@ -19,7 +19,7 @@ public class Peer extends Node {
     /**
      * Connection channel to the relay server
      */
-    private SecureChannel channel;
+    private SSLChannel channel;
 
     /**
      * Main method of the program
@@ -68,7 +68,7 @@ public class Peer extends Node {
      * Get the secure channel of the peer
      * @return secure channel of the peer
      */
-    public SecureChannel getChannel() {
+    public SSLChannel getChannel() {
         return channel;
     }
 
@@ -95,7 +95,7 @@ public class Peer extends Node {
 
             // Set the properties values
             properties.setProperty("log", "info");
-            properties.setProperty("relayhost", "192.168.1.1");
+            properties.setProperty("relayhost", "127.0.0.1");
             properties.setProperty("relayport", "21852");
 
             // Save the file
@@ -154,7 +154,7 @@ public class Peer extends Node {
                 getLogger().log(Level.FATAL, "Invalid value for relay server port property.");
                 return false;
             }
-            channel = new SecureChannel(host, port);
+            channel = new SSLChannel(host, port);
             if(channel.getSocket() == null)
                 return false;
 
