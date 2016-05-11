@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Node class that is common to every computer in the network
  */
-abstract class Node {
+public abstract class Node {
 
     /**
      * String to hold the name of the server key.

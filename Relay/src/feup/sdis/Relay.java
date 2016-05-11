@@ -1,12 +1,11 @@
 package feup.sdis;
-
 import feup.sdis.database.Database;
 import feup.sdis.database.types.DatabaseType;
 import feup.sdis.logger.Level;
 
+
 import java.io.*;
 import java.util.Properties;
-
 /**
  * Relay of the Distributed Backup Service Over The Internet
  */
@@ -57,14 +56,6 @@ public class Relay extends Node {
     }
 
     /**
-     * Get the database of the server
-     * @return database of the server
-     */
-    public Database getDatabase() {
-        return database;
-    }
-
-    /**
      * Constructor of Relay
      */
     private Relay() {
@@ -73,6 +64,14 @@ public class Relay extends Node {
         // Environment variables for SSL
         System.setProperty("javax.net.ssl.keyStore", KEY_STORE);
         System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+    }
+
+    /**
+     * Get the database of the server
+     * @return database of the server
+     */
+    public Database getDatabase() {
+        return database;
     }
 
     /**

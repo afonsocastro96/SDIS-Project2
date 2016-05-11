@@ -1,5 +1,6 @@
 package feup.sdis.database;
 
+import feup.sdis.Node;
 import feup.sdis.Relay;
 import feup.sdis.database.types.DatabaseType;
 import feup.sdis.database.types.MySQL;
@@ -78,17 +79,17 @@ public abstract class Database {
     public boolean connect() {
         try {
             if(connection != null && !connection.isClosed()) {
-                Relay.getLogger().log(Level.WARNING, "Connection already established with the database.");
+                Node.getLogger().log(Level.WARNING, "Connection already established with the database.");
                 return false;
             }
 
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
 
-            Relay.getLogger().log(Level.INFO, "Established connection with the database.");
+            Node.getLogger().log(Level.INFO, "Established connection with the database.");
             return true;
         } catch (final SQLException | ClassNotFoundException e) {
-            Relay.getLogger().log(Level.FATAL, "Could not connect to the database. " + e.getMessage());
+            Node.getLogger().log(Level.FATAL, "Could not connect to the database. " + e.getMessage());
             return false;
         }
     }
@@ -101,10 +102,10 @@ public abstract class Database {
             if(connection != null)
                 connection.close();
 
-            Relay.getLogger().log(Level.INFO, "Closed connection with the database.");
+            Node.getLogger().log(Level.INFO, "Closed connection with the database.");
             return true;
         } catch (final SQLException e) {
-            Relay.getLogger().log(Level.ERROR, "Could not close the connection to the database. " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Could not close the connection to the database. " + e.getMessage());
             return false;
         }
     }
@@ -118,7 +119,7 @@ public abstract class Database {
             if(connection != null)
                 return connection.isClosed();
         } catch (final SQLException e) {
-            Relay.getLogger().log(Level.ERROR, "Could not check the connection with the database. " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Could not check the connection with the database. " + e.getMessage());
         }
         return true;
     }
@@ -132,7 +133,7 @@ public abstract class Database {
             if (statement != null)
                 statement.close();
         } catch (final SQLException e) {
-            Relay.getLogger().log(Level.ERROR, "Could not close the statement. " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Could not close the statement. " + e.getMessage());
         }
     }
 
@@ -145,7 +146,7 @@ public abstract class Database {
             if (resultSet != null)
                 resultSet.close();
         } catch (final SQLException e) {
-            Relay.getLogger().log(Level.ERROR, "Could not close the result set. " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Could not close the result set. " + e.getMessage());
         }
     }
 
@@ -155,7 +156,7 @@ public abstract class Database {
      * @param parameters parameters of the prepared statement
      * @return result of the given query
      */
-    public ResultSet executeQuery(final String sql, final List<Object> parameters) {
+    public ResultSet executeQuery(final String sql, final Object[] parameters) {
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -167,7 +168,7 @@ public abstract class Database {
 
             resultSet = preparedStatement.executeQuery();
         } catch (final SQLException e) {
-            Relay.getLogger().log(Level.ERROR, "Query could not be executed. " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Query could not be executed. " + e.getMessage());
         } finally {
             close(preparedStatement);
         }
@@ -181,7 +182,7 @@ public abstract class Database {
      * @param parameters parameters of the prepared statement
      * @return number of rows updated
      */
-    public int executeUpdate(final String sql, final List<Object> parameters) {
+    public int executeUpdate(final String sql, final Object[] parameters) {
         int numberRowsUpdated = -1;
         PreparedStatement preparedStatement = null;
         try {
@@ -193,7 +194,7 @@ public abstract class Database {
 
             numberRowsUpdated = preparedStatement.executeUpdate();
         } catch (final SQLException e) {
-            Relay.getLogger().log(Level.ERROR, "Update could not be executed. " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Update could not be executed. " + e.getMessage());
         } finally {
             close(preparedStatement);
         }
