@@ -44,12 +44,13 @@ public class Relay extends Node {
             return;
         if(!getInstance().getDatabase().connect())
             return;
-        getInstance().getServer().open();
+        if(!getInstance().getServer().start())
+            return;
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
 
-        getInstance().getServer().close();
+        //getInstance().getServer().close();
 
         // Stop the server
         getLogger().log(Level.INFO, "Service stopped.");
@@ -204,8 +205,6 @@ public class Relay extends Node {
                 return false;
             }
             server = new SSLServer(host, port);
-            if(server.getSocket() == null)
-                return false;
 
             DatabaseType databaseType;
             try {

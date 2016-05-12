@@ -48,6 +48,8 @@ public class Peer extends Node {
             return;
         if(!getInstance().loadConfig())
             return;
+        if(!getInstance().getChannel().open())
+            return;
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
@@ -179,8 +181,6 @@ public class Peer extends Node {
                 return false;
             }
             channel = new SSLChannel(host, port);
-            if(channel.getSocket() == null)
-                return false;
 
             getLogger().log(Level.INFO, "Configuration has been loaded.");
             return true;

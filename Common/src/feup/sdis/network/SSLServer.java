@@ -9,6 +9,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,7 +26,7 @@ public class SSLServer implements Runnable {
     /**
      * Boolean to control if the server is opened
      */
-    private AtomicBoolean opened;
+    private final AtomicBoolean opened;
 
     /**
      * Host of the server
@@ -45,7 +46,7 @@ public class SSLServer implements Runnable {
     /**
      * List with connected peers
      */
-    private final ConcurrentArrayList<SSLSocket> connections;
+    private final ConcurrentArrayList<SSLChannel> connections;
 
     /**
      * Constructor of SSLServer
@@ -58,39 +59,43 @@ public class SSLServer implements Runnable {
         this.host = host;
         this.port = port;
         this.connections = new ConcurrentArrayList<>();
+    }
 
+    /**
+     * Start the server
+     * @return true if successful, false otherwise
+     */
+    public boolean start() {
         // Create the SSL socket
-        SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        final SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
         try {
             serverSocket = (SSLServerSocket) factory.createServerSocket(port, MAX_CONNECTIONS, InetAddress.getByName(host));
             Node.getLogger().log(Level.INFO, "Created a secure server at " + host + ":" + port);
         } catch (IOException e) {
             serverSocket = null;
             Node.getLogger().log(Level.FATAL, "Could not create a secure socket at " + host + ":" + port + ". " + e.getMessage());
+            return false;
         }
-    }
 
-    /**
-     * Get the server socket
-     * @return server socket
-     */
-    public SSLServerSocket getSocket() {
-        return serverSocket;
-    }
-
-    /**
-     * Open the server
-     */
-    public void open() {
         opened.set(true);
         new Thread(this).start();
+        return true;
     }
 
     /**
      * Close the server
+     * @return true if successful, false otherwise
      */
-    public void close() {
+    public boolean close() {
         opened.set(false);
+        try {
+            serverSocket.close();
+            Node.getLogger().log(Level.INFO, "Server has been closed.");
+            return true;
+        } catch (IOException e) {
+            Node.getLogger().log(Level.ERROR, "Could not close the server at " + host + ":" + port + ". " + e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -104,10 +109,13 @@ public class SSLServer implements Runnable {
             Node.getLogger().log(Level.DEBUG, "Waiting a new connection (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
             try {
                 serverSocket.setSoTimeout(1000); // 1 second to expire the accept
-                SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
-                connections.add(connectionSocket);
-                Node.getLogger().log(Level.INFO, "Accepted incoming connection from " + connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort());
-            } catch (SocketTimeoutException ignored) {
+                final SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
+                final SSLChannel channel = new SSLChannel(connectionSocket);
+                connections.add(channel);
+                channel.open();
+
+                Node.getLogger().log(Level.INFO, connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort() + " has connected.");
+            } catch (SocketTimeoutException | SocketException ignored) {
             } catch (IOException e) {
                 Node.getLogger().log(Level.DEBUG, "Could not accept a connection. " + e.getMessage());
             }
