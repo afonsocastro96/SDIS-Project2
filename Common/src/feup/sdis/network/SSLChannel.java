@@ -5,9 +5,9 @@ import feup.sdis.logger.Level;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Observable;
@@ -16,17 +16,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * SSL Channel
  */
-public class SSLChannel extends Observable implements Runnable {
+public class SSLChannel {
 
     /**
-     * Maximum size per packet
+     * Boolean to control if channel is connected
      */
-    private final static int MAX_SIZE_PACKET = 65000;
-
-    /**
-     * Boolean to control if the server is opened
-     */
-    private final AtomicBoolean opened;
+    private final AtomicBoolean connected;
 
     /**
      * Host of the channel
@@ -60,7 +55,7 @@ public class SSLChannel extends Observable implements Runnable {
      * @param port port to connect
      */
     public SSLChannel(final String host, final int port) {
-        this.opened = new AtomicBoolean(false);
+        this.connected = new AtomicBoolean(false);
         this.host = host;
         this.port = port;
     }
@@ -71,10 +66,26 @@ public class SSLChannel extends Observable implements Runnable {
      * @param socket socket of the channel
      */
     public SSLChannel(final SSLSocket socket) {
-        this.opened = new AtomicBoolean(false);
+        this.connected = new AtomicBoolean(false);
         this.socket = socket;
         this.host = socket.getInetAddress().getHostAddress();
         this.port = socket.getPort();
+    }
+
+    /**
+     * Get the host of the channel
+     * @return host of the channel
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * Get the port of the channel
+     * @return port of the channel
+     */
+    public int getPort() {
+        return port;
     }
 
     /**
@@ -82,8 +93,8 @@ public class SSLChannel extends Observable implements Runnable {
      *
      * @return true if successful, false otherwise
      */
-    public boolean open() {
-        if (opened.get()) {
+    public boolean connect() {
+        if (connected.get()) {
             Node.getLogger().log(Level.WARNING, "A connection is already established to " + host + ":" + port + ".");
             return false;
         }
@@ -108,23 +119,19 @@ public class SSLChannel extends Observable implements Runnable {
             input = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             Node.getLogger().log(Level.FATAL, "Could not get the data streams of " + host + ":" + port + ". " + e.getMessage());
-            close(true);
+            disconnect();
             return false;
         }
 
-        opened.set(true);
-        new Thread(this).start();
+        connected.set(true);
         return true;
     }
 
     /**
      * Close the connection
-     *
-     * @param forced true if closing was forced by an error
-     * @return true if successful, false otherwise
      */
-    public boolean close(final boolean forced) {
-        opened.set(false);
+    public void disconnect() {
+        connected.set(false);
 
         try {
             if (output != null)
@@ -133,64 +140,54 @@ public class SSLChannel extends Observable implements Runnable {
                 input.close();
             if (socket != null)
                 socket.close();
-            if(forced)
-                Node.getLogger().log(Level.INFO, host + ":" + port + " has disconnected.");
-            else
-                Node.getLogger().log(Level.INFO, "Connection to " + host + ":" + port + " was closed.");
-            return true;
+            Node.getLogger().log(Level.INFO, "Connection to " + host + ":" + port + " was closed.");
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not close the channel connection to " + host + ":" + port + ". " + e.getMessage());
-            return false;
         }
     }
 
     /**
-     * Runner of the channel to accept incoming messages
+     * Read a message from the channel
+     * @return message that was read
+     * @throws IOException when an error occurs on read
      */
-    @Override
-    public void run() {
-        Object data;
-
-        while (opened.get()) {
-            data = read();
-            if (data == null)
-                continue;
-
-            notifyObservers(data);
-        }
+    public byte[] read() throws IOException {
+        int size = readMessageSize();
+        byte[] data = readMessageContent(size);
+        Node.getLogger().log(Level.DEBUG, "Received a message with size of " + size + " bytes.");
+        return data;
     }
 
     /**
-     * Read a object from the socket
+     * Read the message size from the channel
+     * @return size of the received message
+     * @throws IOException when an error occurs on read
+     */
+    private int readMessageSize() throws IOException {
+        return input.readInt();
+    }
+
+    /**
+     * Read the content of a message
+     * @param size size of the message to read
+     * @return content of the message
+     * @throws IOException when an error occurs on read
+     */
+    private byte[] readMessageContent(final int size) throws IOException {
+        byte[] buffer = new byte[size];
+        if(input.read(buffer) == -1)
+            throw new EOFException();
+        return buffer;
+    }
+
+    /**
+     * Write a object to the socket
      *
-     * @return object read from the socket
+     * @param data data to be written
      */
-    private Object read() {
-        final ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[MAX_SIZE_PACKET];
-        int bytesRead;
-        try {
-            // Read data
-            byteArray.reset();
-            do {
-                bytesRead = input.read(buffer);
-                if (bytesRead != -1)
-                    byteArray.write(buffer, 0, bytesRead);
-            } while (bytesRead != -1);
-            if (byteArray.size() <= 0)
-                return null;
-            Node.getLogger().log(Level.INFO, "Reading from the socket.");
-
-            Node.getLogger().log(Level.DEBUG, "Received a packet with size of " + byteArray.size() + " bytes.");
-            return byteArray.toByteArray();
-        } catch (SocketTimeoutException ignored) {
-            return null;
-        } catch (IOException e) {
-            if(opened.get()) {
-                Node.getLogger().log(Level.ERROR, "Could not read the data from the socket. " + e.getMessage());
-                close(true);
-            }
-            return null;
-        }
+    public void write(final byte[] data) throws IOException {
+        output.writeInt(data.length);
+        output.write(data);
+        Node.getLogger().log(Level.DEBUG, "Sent a message with size of " + data.length + " bytes.");
     }
 }

@@ -2,11 +2,10 @@ package feup.sdis;
 
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
+import feup.sdis.network.SSLManager;
 
 import java.io.*;
-import java.net.NetworkInterface;
 import java.util.Properties;
-import java.util.Scanner;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
@@ -22,6 +21,11 @@ public class Peer extends Node {
      * Id of the peer
      */
     private final String id;
+
+    /**
+     * Monitor of the connection channel to the relay server
+     */
+    private SSLManager monitor;
 
     /**
      * Connection channel to the relay server
@@ -48,8 +52,15 @@ public class Peer extends Node {
             return;
         if(!getInstance().loadConfig())
             return;
-        if(!getInstance().getChannel().open())
-            return;
+        new Thread(getInstance().getMonitor()).start();
+        try {
+            Thread.sleep(1000);
+            getInstance().getMonitor().write("Cenas".getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
@@ -88,8 +99,16 @@ public class Peer extends Node {
     }
 
     /**
-     * Get the secure channel of the peer
-     * @return secure channel of the peer
+     * Get the secure channel monitor of the peer
+     * @return secure channel monitor of the peer
+     */
+    public SSLManager getMonitor() {
+        return monitor;
+    }
+
+    /**
+     * Get the channel of the peer
+     * @return channel of the peer
      */
     public SSLChannel getChannel() {
         return channel;
@@ -178,6 +197,7 @@ public class Peer extends Node {
                 return false;
             }
             channel = new SSLChannel(host, port);
+            monitor = new SSLManager(channel);
 
             getLogger().log(Level.INFO, "Configuration has been loaded.");
             return true;

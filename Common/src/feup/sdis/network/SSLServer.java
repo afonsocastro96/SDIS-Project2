@@ -9,7 +9,6 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,7 +45,7 @@ public class SSLServer implements Runnable {
     /**
      * List with connected peers
      */
-    private final ConcurrentArrayList<SSLChannel> connections;
+    private final ConcurrentArrayList<SSLManager> connections;
 
     /**
      * Constructor of SSLServer
@@ -84,17 +83,20 @@ public class SSLServer implements Runnable {
 
     /**
      * Close the server
-     * @return true if successful, false otherwise
      */
-    public boolean close() {
+    public void close() {
         opened.set(false);
+    }
+
+    /**
+     * Shutdown the server
+     */
+    private void shutdown() {
         try {
             serverSocket.close();
             Node.getLogger().log(Level.INFO, "Server has been closed.");
-            return true;
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not close the server at " + host + ":" + port + ". " + e.getMessage());
-            return false;
         }
     }
 
@@ -106,19 +108,21 @@ public class SSLServer implements Runnable {
         Node.getLogger().log(Level.INFO, "Accepting up to " + MAX_CONNECTIONS + " concurrent connections.");
 
         while(opened.get()) {
-            Node.getLogger().log(Level.DEBUG, "Waiting a new connection (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
             try {
                 serverSocket.setSoTimeout(1000); // 1 second to expire the accept
                 final SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
-                final SSLChannel channel = new SSLChannel(connectionSocket);
-                connections.add(channel);
-                channel.open();
+                final SSLManager monitor = new SSLManager(new SSLChannel(connectionSocket));
+                new Thread(monitor).start();
+                connections.add(monitor);
 
                 Node.getLogger().log(Level.INFO, connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort() + " has connected.");
+                Node.getLogger().log(Level.DEBUG, "Waiting a new connection (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
             } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
                 Node.getLogger().log(Level.DEBUG, "Could not accept a connection. " + e.getMessage());
             }
         }
+
+        shutdown();
     }
 }
