@@ -49,11 +49,6 @@ public class Relay extends Node {
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
-
-        //getInstance().getServer().close();
-
-        // Stop the server
-        getLogger().log(Level.INFO, "Service stopped.");
     }
 
     /**

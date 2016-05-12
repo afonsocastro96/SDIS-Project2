@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -68,6 +67,7 @@ public class SSLChannel extends Observable implements Runnable {
 
     /**
      * Constructor of SSLChannel
+     *
      * @param socket socket of the channel
      */
     public SSLChannel(final SSLSocket socket) {
@@ -83,25 +83,33 @@ public class SSLChannel extends Observable implements Runnable {
      * @return true if successful, false otherwise
      */
     public boolean open() {
-        if(opened.get()) {
+        if (opened.get()) {
             Node.getLogger().log(Level.WARNING, "A connection is already established to " + host + ":" + port + ".");
             return false;
         }
 
         // Create the SSL socket
-        if(socket == null) {
+        if (socket == null) {
             final SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             try {
                 socket = (SSLSocket) factory.createSocket(host, port);
-                socket.setSoTimeout(1000); // Wait up to one second to read data
-                output = new DataOutputStream(socket.getOutputStream());
-                input = new DataInputStream(socket.getInputStream());
-                Node.getLogger().log(Level.INFO, "Established a secure connection with the relay server at " + host + ":" + port);
+                Node.getLogger().log(Level.INFO, "Established a secure connection to " + host + ":" + port);
             } catch (IOException e) {
                 socket = null;
                 Node.getLogger().log(Level.FATAL, "Could not establish a secure socket to " + host + ":" + port + ". " + e.getMessage());
                 return false;
             }
+        }
+
+        // Configure data streams
+        try {
+            socket.setSoTimeout(1000); // Wait up to one second to read data
+            output = new DataOutputStream(socket.getOutputStream());
+            input = new DataInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            Node.getLogger().log(Level.FATAL, "Could not get the data streams of " + host + ":" + port + ". " + e.getMessage());
+            close(true);
+            return false;
         }
 
         opened.set(true);
@@ -111,22 +119,27 @@ public class SSLChannel extends Observable implements Runnable {
 
     /**
      * Close the connection
+     *
+     * @param forced true if closing was forced by an error
      * @return true if successful, false otherwise
      */
-    public boolean close() {
+    public boolean close(final boolean forced) {
         opened.set(false);
 
         try {
-            if (socket != null)
-                socket.close();
             if (output != null)
                 output.close();
             if (input != null)
                 input.close();
-            Node.getLogger().log(Level.INFO, "Connection to the server was closed.");
+            if (socket != null)
+                socket.close();
+            if(forced)
+                Node.getLogger().log(Level.INFO, host + ":" + port + " has disconnected.");
+            else
+                Node.getLogger().log(Level.INFO, "Connection to " + host + ":" + port + " was closed.");
             return true;
         } catch (IOException e) {
-            Node.getLogger().log(Level.ERROR, "Could not close the secure socket to " + host + ":" + port + ". " + e.getMessage());
+            Node.getLogger().log(Level.ERROR, "Could not close the channel connection to " + host + ":" + port + ". " + e.getMessage());
             return false;
         }
     }
@@ -154,7 +167,7 @@ public class SSLChannel extends Observable implements Runnable {
      */
     private Object read() {
         final ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-        byte[] buffer = new byte[MAX_SIZE_PACKET];
+        final byte[] buffer = new byte[MAX_SIZE_PACKET];
         int bytesRead;
         try {
             // Read data
@@ -166,13 +179,17 @@ public class SSLChannel extends Observable implements Runnable {
             } while (bytesRead != -1);
             if (byteArray.size() <= 0)
                 return null;
+            Node.getLogger().log(Level.INFO, "Reading from the socket.");
 
             Node.getLogger().log(Level.DEBUG, "Received a packet with size of " + byteArray.size() + " bytes.");
             return byteArray.toByteArray();
-        } catch (SocketTimeoutException | SocketException ignored) {
+        } catch (SocketTimeoutException ignored) {
             return null;
         } catch (IOException e) {
-            Node.getLogger().log(Level.ERROR, "Could not read the data from the socket. " + e.getMessage());
+            if(opened.get()) {
+                Node.getLogger().log(Level.ERROR, "Could not read the data from the socket. " + e.getMessage());
+                close(true);
+            }
             return null;
         }
     }

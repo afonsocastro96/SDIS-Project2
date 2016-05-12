@@ -53,9 +53,6 @@ public class Peer extends Node {
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
-
-        // Stop the server
-        getLogger().log(Level.INFO, "Service stopped.");
     }
 
     /**

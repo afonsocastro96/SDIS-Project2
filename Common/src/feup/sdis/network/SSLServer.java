@@ -115,7 +115,7 @@ public class SSLServer implements Runnable {
                 channel.open();
 
                 Node.getLogger().log(Level.INFO, connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort() + " has connected.");
-            } catch (SocketTimeoutException | SocketException ignored) {
+            } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
                 Node.getLogger().log(Level.DEBUG, "Could not accept a connection. " + e.getMessage());
             }
