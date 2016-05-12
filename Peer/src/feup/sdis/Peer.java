@@ -53,14 +53,6 @@ public class Peer extends Node {
         if(!getInstance().loadConfig())
             return;
         new Thread(getInstance().getMonitor()).start();
-        try {
-            Thread.sleep(1000);
-            getInstance().getMonitor().write("Cenas".getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
