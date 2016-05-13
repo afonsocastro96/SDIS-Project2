@@ -7,15 +7,18 @@ import feup.sdis.utils.ConcurrentArrayList;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * SSL Server
  */
-public class SSLServer implements Runnable {
+public class SSLServer implements Runnable, Observer {
 
     /**
      * Maximum connections to the relay server
@@ -69,6 +72,7 @@ public class SSLServer implements Runnable {
         final SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
         try {
             serverSocket = (SSLServerSocket) factory.createServerSocket(port, MAX_CONNECTIONS, InetAddress.getByName(host));
+            serverSocket.setSoTimeout(1000); // 1 second
             Node.getLogger().log(Level.INFO, "Created a secure server at " + host + ":" + port);
         } catch (IOException e) {
             serverSocket = null;
@@ -109,14 +113,14 @@ public class SSLServer implements Runnable {
 
         while(opened.get()) {
             try {
-                serverSocket.setSoTimeout(1000); // 1 second to expire the accept
                 final SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
                 final SSLManager monitor = new SSLManager(new SSLChannel(connectionSocket));
+                monitor.addObserver(this);
                 new Thread(monitor).start();
+
                 connections.add(monitor);
 
-                Node.getLogger().log(Level.INFO, connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort() + " has connected.");
-                Node.getLogger().log(Level.DEBUG, "Waiting a new connection (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
+                Node.getLogger().log(Level.INFO, connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort() + " has connected (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
             } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
                 Node.getLogger().log(Level.DEBUG, "Could not accept a connection. " + e.getMessage());
@@ -124,5 +128,30 @@ public class SSLServer implements Runnable {
         }
 
         shutdown();
+    }
+
+    /**
+     * Update method to receive updates when a SSLManager changes its status
+     * @param o observable that called the function
+     * @param arg arguments of the function
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+        if(!(o instanceof SSLManager))
+            return;
+
+        if(arg == null)
+            return;
+
+        final SSLManager monitor = (SSLManager) o;
+
+        if(arg instanceof EOFException) {
+            connections.remove((SSLManager) o);
+            Node.getLogger().log(Level.INFO, monitor.getChannel().getHost() + ":" + monitor.getChannel().getPort() + " has disconnected (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
+        } else if (arg instanceof IOException) {
+            connections.remove((SSLManager) o);
+            Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + " (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
+        }
+
     }
 }

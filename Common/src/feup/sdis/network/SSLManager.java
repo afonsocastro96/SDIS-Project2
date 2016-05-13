@@ -1,9 +1,5 @@
 package feup.sdis.network;
 
-import feup.sdis.Node;
-import feup.sdis.logger.Level;
-
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Observable;
@@ -35,6 +31,14 @@ public class SSLManager extends Observable implements Runnable {
     }
 
     /**
+     * Get the channel of the manager
+     * @return channel of the manager
+     */
+    public SSLChannel getChannel() {
+        return channel;
+    }
+
+    /**
      * Runner of the monitor to accept incoming messages
      */
     @Override
@@ -49,19 +53,14 @@ public class SSLManager extends Observable implements Runnable {
         while (running.get()) {
             try {
                 data = channel.read();
+                setChanged();
+                notifyObservers(data);
             } catch (SocketTimeoutException ignored) {
-                continue;
-            } catch (EOFException e) {
-                Node.getLogger().log(Level.INFO, channel.getHost() + ":" + channel.getPort() + " has disconnected.");
-                running.set(false);
-                continue;
             } catch (IOException e) {
-                Node.getLogger().log(Level.INFO, "Could not read data from host. " + e.getMessage());
+                setChanged();
+                notifyObservers(e);
                 running.set(false);
-                continue;
             }
-
-            notifyObservers(data);
         }
 
         // Disconnect from the channel

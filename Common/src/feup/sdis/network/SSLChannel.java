@@ -114,7 +114,7 @@ public class SSLChannel {
 
         // Configure data streams
         try {
-            socket.setSoTimeout(1000); // Wait up to one second to read data
+            socket.setSoTimeout(1000); // Wait up to one second
             output = new DataOutputStream(socket.getOutputStream());
             input = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
@@ -140,6 +140,7 @@ public class SSLChannel {
                 input.close();
             if (socket != null)
                 socket.close();
+            socket = null;
             Node.getLogger().log(Level.INFO, "Connection to " + host + ":" + port + " was closed.");
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not close the channel connection to " + host + ":" + port + ". " + e.getMessage());
