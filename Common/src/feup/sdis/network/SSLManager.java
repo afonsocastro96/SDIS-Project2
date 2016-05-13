@@ -1,6 +1,10 @@
 package feup.sdis.network;
 
+import feup.sdis.Node;
+import feup.sdis.logger.Level;
+
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -16,6 +20,11 @@ public class SSLManager extends Observable implements Runnable {
     private final AtomicBoolean running;
 
     /**
+     * Delay in millis to restart monitoring a channel
+     */
+    private int retryDelay;
+
+    /**
      * Channel to be monitored
      */
     private final SSLChannel channel;
@@ -27,6 +36,7 @@ public class SSLManager extends Observable implements Runnable {
      */
     public SSLManager(final SSLChannel channel) {
         this.running = new AtomicBoolean();
+        this.retryDelay = 0;
         this.channel = channel;
     }
 
@@ -39,14 +49,51 @@ public class SSLManager extends Observable implements Runnable {
     }
 
     /**
+     * Start monitoring the channel
+     */
+    public void start() {
+        running.set(true);
+        new Thread(this).start();
+    }
+
+    /**
+     * Stop monitoring the channel
+     */
+    public void stop() {
+        running.set(false);
+    }
+
+    /**
+     * Retry to monitor the channel
+     */
+    public void retry() {
+        if(retryDelay == 0)
+            retryDelay = 1000;
+        else if (retryDelay < 60000)
+            retryDelay *= 2;
+
+        Node.getLogger().log(Level.INFO, "Retrying to connect to the server in " + (retryDelay / 1000) + " seconds.");
+
+        start();
+    }
+
+    /**
      * Runner of the monitor to accept incoming messages
      */
     @Override
     public void run() {
-        running.set(true);
+        try {
+            Thread.sleep(retryDelay);
+        } catch (InterruptedException ignored) {
+        }
 
         // Connect to the channel
-        if (!channel.connect()) return;
+        if (!channel.connect()) {
+            setChanged();
+            notifyObservers(new SocketException());
+            return;
+        }
+        retryDelay = 0;
 
         // Read messages from the channel
         byte[] data;

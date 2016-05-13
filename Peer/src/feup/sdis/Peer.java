@@ -5,12 +5,15 @@ import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
 
 import java.io.*;
+import java.net.SocketException;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
  */
-public class Peer extends Node {
+public class Peer extends Node implements Observer {
 
     /**
      * Instance of the peer
@@ -26,11 +29,6 @@ public class Peer extends Node {
      * Monitor of the connection channel to the relay server
      */
     private SSLManager monitor;
-
-    /**
-     * Connection channel to the relay server
-     */
-    private SSLChannel channel;
 
     /**
      * Main method of the program
@@ -52,14 +50,8 @@ public class Peer extends Node {
             return;
         if(!getInstance().loadConfig())
             return;
-        new Thread(getInstance().getMonitor()).start();
-
-        try {
-            Thread.sleep(1000);
-            getInstance().getChannel().disconnect();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        getInstance().getMonitor().addObserver(getInstance());
+        getInstance().getMonitor().start();
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
@@ -103,14 +95,6 @@ public class Peer extends Node {
      */
     public SSLManager getMonitor() {
         return monitor;
-    }
-
-    /**
-     * Get the channel of the peer
-     * @return channel of the peer
-     */
-    public SSLChannel getChannel() {
-        return channel;
     }
 
     /**
@@ -195,8 +179,7 @@ public class Peer extends Node {
                 getLogger().log(Level.FATAL, "Invalid value for relay server port property.");
                 return false;
             }
-            channel = new SSLChannel(host, port);
-            monitor = new SSLManager(channel);
+            monitor = new SSLManager(new SSLChannel(host, port));
 
             getLogger().log(Level.INFO, "Configuration has been loaded.");
             return true;
@@ -212,5 +195,30 @@ public class Peer extends Node {
                 }
             }
         }
+    }
+
+    /**
+     * Update method to receive updates when a SSLManager changes its status
+     * @param o observable that called the function
+     * @param arg arguments of the function
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+        if(!(o instanceof SSLManager))
+            return;
+
+        if(arg == null)
+            return;
+
+        final SSLManager monitor = (SSLManager) o;
+
+        if(arg instanceof EOFException) {
+            Node.getLogger().log(Level.INFO, monitor.getChannel().getHost() + ":" + monitor.getChannel().getPort() + " has disconnected.");
+        } else if (arg instanceof SocketException) {
+        } else if (arg instanceof IOException) {
+            Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + ".");
+        }
+
+        getInstance().getMonitor().retry();
     }
 }

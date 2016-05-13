@@ -116,7 +116,7 @@ public class SSLServer implements Runnable, Observer {
                 final SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
                 final SSLManager monitor = new SSLManager(new SSLChannel(connectionSocket));
                 monitor.addObserver(this);
-                new Thread(monitor).start();
+                monitor.start();
 
                 connections.add(monitor);
 
@@ -152,6 +152,5 @@ public class SSLServer implements Runnable, Observer {
             connections.remove((SSLManager) o);
             Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + " (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
         }
-
     }
 }
