@@ -52,7 +52,6 @@ public class SSLManager extends Observable implements Runnable {
      * Start monitoring the channel
      */
     public void start() {
-        running.set(true);
         new Thread(this).start();
     }
 
@@ -94,6 +93,7 @@ public class SSLManager extends Observable implements Runnable {
             return;
         }
         retryDelay = 0;
+        running.set(true);
 
         // Read messages from the channel
         byte[] data;
