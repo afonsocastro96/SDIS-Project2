@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * Peer of the Distributed Backup Service Over The Internet
@@ -23,7 +24,7 @@ public class Peer extends Node implements Observer {
     /**
      * Id of the peer
      */
-    private final String id;
+    private final UUID id;
 
     /**
      * Monitor of the connection channel to the relay server
@@ -37,7 +38,7 @@ public class Peer extends Node implements Observer {
      */
     public static void main(String[] args) {
         // ID of the peer
-        final String id = getBiosSerialNumber();
+        final UUID id = getSerialNumber();
         if(id == null)
             return;
 
@@ -71,7 +72,7 @@ public class Peer extends Node implements Observer {
      *
      * @param id id of the peer
      */
-    private Peer(final String id) {
+    private Peer(final UUID id) {
         super("Peer");
 
         this.id = id;
@@ -85,7 +86,7 @@ public class Peer extends Node implements Observer {
      * Get the ID of the peer
      * @return id of the peer
      */
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

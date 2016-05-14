@@ -42,8 +42,8 @@ public class Relay extends Node {
             return;
         if(!getInstance().loadConfig())
             return;
-        if(!getInstance().getDatabase().connect())
-            return;
+        //if(!getInstance().getDatabase().connect())
+        //    return;
         if(!getInstance().getServer().start())
             return;
 

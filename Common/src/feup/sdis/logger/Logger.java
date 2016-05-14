@@ -11,6 +11,11 @@ import java.util.Date;
 public class Logger {
 
     /**
+     * Log file
+     */
+    static final String LOG_FILE = "node.log";
+
+    /**
      * Name of the logger
      */
     private final String name;
@@ -52,7 +57,7 @@ public class Logger {
     public Logger(final String name, final Level minLevel) throws FileNotFoundException, UnsupportedEncodingException {
         this.name = name;
         this.minLevel = minLevel;
-        this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.name + ".log", true), "UTF-8"));
+        this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(LOG_FILE, true), "UTF-8"));
         this.dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
 

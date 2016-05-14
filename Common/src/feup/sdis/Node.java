@@ -6,6 +6,7 @@ import feup.sdis.utils.FileUtils;
 
 import java.io.*;
 import java.util.Scanner;
+import java.util.UUID;
 
 /**
  * Node class that is common to every computer in the network
@@ -17,6 +18,9 @@ public abstract class Node {
      */
     static final String KEY_STORE = "security" + File.separator + "serverKeyStore";
 
+    /**
+     * Configuration file
+     */
     static final String CONFIG_FILE = "config.properties";
 
     /**
@@ -51,13 +55,13 @@ public abstract class Node {
     }
 
     /**
-     * Get the BIOS serial number
-     * @return BIOS serial number
+     * Get the serial number
+     * @return serial number
      */
-    static String getBiosSerialNumber() {
+    static UUID getSerialNumber() {
         Process process;
         try {
-            process = Runtime.getRuntime().exec(new String[] { "wmic", "bios", "get", "serialnumber" });
+            process = Runtime.getRuntime().exec(new String[] { "wmic", "csproduct", "get", "uuid" });
             process.getOutputStream().close();
         } catch (IOException e) {
             getLogger().log(Level.FATAL, "Could not retrieve the BIOS serial number. " + e.getMessage());
@@ -65,7 +69,7 @@ public abstract class Node {
         }
         final Scanner sc = new Scanner(process.getInputStream());
         sc.next();
-        return sc.next();
+        return UUID.fromString(sc.next());
     }
 
     /**
