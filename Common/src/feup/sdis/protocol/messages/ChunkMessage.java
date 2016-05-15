@@ -1,5 +1,6 @@
 package feup.sdis.protocol.messages;
 
+import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.listeners.ProtocolListener;
 
 import java.util.UUID;
@@ -17,6 +18,6 @@ public class ChunkMessage extends ProtocolMessage {
      * @param body body of the chunk
      */
     public ChunkMessage(final UUID senderId, final UUID fileId, final int chunkNo, byte[] body) {
-        super(Type.CHUNK, ProtocolListener.VERSION, senderId, fileId, chunkNo, body);
+        super(Type.CHUNK, Protocol.VERSION, senderId, fileId, chunkNo, body);
     }
 }

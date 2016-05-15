@@ -1,5 +1,6 @@
 package feup.sdis.protocol.messages.parsers;
 
+import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.listeners.ProtocolListener;
 import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
@@ -60,7 +61,7 @@ public abstract class ProtocolParser {
      * @return true if valid, false otherwise
      */
     protected boolean validVersion(String version) {
-        return version.matches("^\\d.\\d$") && Integer.parseInt(version) <= ProtocolListener.VERSION;
+        return version.matches("^\\d.\\d$") && Integer.parseInt(version) <= Protocol.VERSION;
     }
 
     /**

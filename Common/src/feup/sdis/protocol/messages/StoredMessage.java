@@ -1,5 +1,6 @@
 package feup.sdis.protocol.messages;
 
+import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.listeners.ProtocolListener;
 
 import java.util.UUID;
@@ -16,6 +17,6 @@ public class StoredMessage extends ProtocolMessage {
      * @param chunkNo number of the chunk
      */
     public StoredMessage(final UUID senderId, final UUID fileId, final int chunkNo) {
-        super(Type.STORED, ProtocolListener.VERSION, senderId, fileId, chunkNo);
+        super(Type.STORED, Protocol.VERSION, senderId, fileId, chunkNo);
     }
 }
