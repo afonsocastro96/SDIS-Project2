@@ -1,15 +1,12 @@
 package feup.sdis.protocol;
 
-import java.util.Observer;
-
 /**
- * Protocol Listener
+ * Protocol
  */
-public abstract class BackupProtocol implements Observer {
+public class Protocol {
 
     /**
      * Version of the protocol
      */
     public static final int VERSION = 1;
-
 }

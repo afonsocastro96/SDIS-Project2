@@ -1,4 +1,4 @@
-package feup.sdis.protocol;
+package feup.sdis.protocol.messages;
 
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;

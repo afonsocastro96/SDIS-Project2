@@ -1,7 +1,6 @@
 package feup.sdis.protocol.messages;
 
-import feup.sdis.protocol.BackupProtocol;
-import feup.sdis.protocol.ProtocolMessage;
+import feup.sdis.protocol.listeners.ProtocolListener;
 
 import java.util.UUID;
 
@@ -11,7 +10,7 @@ import java.util.UUID;
 public class PutChunkMessage extends ProtocolMessage {
 
     /**
-     * Constructor of PutChunk
+     * Constructor of PutChunkMessage
      * @param senderId id of the sender
      * @param fileId id of the file
      * @param chunkNo number of the chunk
@@ -19,7 +18,6 @@ public class PutChunkMessage extends ProtocolMessage {
      * @param body body of the chunk
      */
     public PutChunkMessage(final UUID senderId, final UUID fileId, final int chunkNo, final int replicationDeg, byte[] body) {
-        super(Type.PUTCHUNK, BackupProtocol.VERSION, senderId, fileId, chunkNo, replicationDeg, body);
+        super(Type.PUTCHUNK, ProtocolListener.VERSION, senderId, fileId, chunkNo, replicationDeg, body);
     }
-
 }

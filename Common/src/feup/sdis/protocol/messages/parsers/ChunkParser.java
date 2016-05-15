@@ -2,14 +2,14 @@ package feup.sdis.protocol.messages.parsers;
 
 import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.PutChunkMessage;
+import feup.sdis.protocol.messages.ChunkMessage;
 
 import java.util.UUID;
 
 /**
- * Put chunk parser
+ * Chunk parser
  */
-public class PutChunkParser extends ProtocolParser {
+public class ChunkParser extends ProtocolParser {
 
     /**
      * Parse a message
@@ -21,10 +21,10 @@ public class PutChunkParser extends ProtocolParser {
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);
 
-        if (header.size() != 6)
-            throw new MalformedMessageException("Wrong number of arguments for the PUTCHUNK message: 6 arguments must be present");
+        if (header.size() != 5)
+            throw new MalformedMessageException("Wrong number of arguments for the CHUNK message: 5 arguments must be present");
 
-        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.PUTCHUNK.toString()))
+        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.CHUNK.toString()))
             throw new MalformedMessageException("Wrong protocol");
 
         /* Validate version */
@@ -35,18 +35,13 @@ public class PutChunkParser extends ProtocolParser {
             throw new MalformedMessageException("Sender ID must be an UUID");
 
         /* Validate file ID */
-        if (!validFileId(header.get(3))){
+        if (!validFileId(header.get(3)))
             throw new MalformedMessageException("File ID must be an UUID");
-        }
 
         /* Validate chunk No */
         if (!validChunkNo(header.get(4)))
             throw new MalformedMessageException("Chunk Number must be an integer smaller than 1000000");
 
-        /* Validate Replication Deg */
-        if(!validReplicationDeg(header.get(5)))
-            throw new MalformedMessageException("Replication Degree must be a single digit");
-
-        return new PutChunkMessage(UUID.fromString(header.get(2)), UUID.fromString(header.get(3)), Integer.parseInt(header.get(4)), Integer.parseInt(header.get(5)), body);
+        return new ChunkMessage(UUID.fromString(header.get(2)), UUID.fromString(header.get(3)), Integer.parseInt(header.get(4)), body);
     }
 }
