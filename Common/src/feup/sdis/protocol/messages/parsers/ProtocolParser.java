@@ -61,7 +61,7 @@ public abstract class ProtocolParser {
      * @return true if valid, false otherwise
      */
     protected boolean validVersion(String version) {
-        return version.matches("^\\d.\\d$") && Integer.parseInt(version) <= Protocol.VERSION;
+        return version.matches("^\\d.\\d$") && Double.parseDouble(version) <= Protocol.VERSION;
     }
 
     /**

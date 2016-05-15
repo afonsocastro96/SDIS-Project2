@@ -2,6 +2,7 @@ package feup.sdis.network;
 
 import feup.sdis.Node;
 import feup.sdis.logger.Level;
+import feup.sdis.protocol.listeners.*;
 import feup.sdis.utils.ConcurrentArrayList;
 
 import javax.net.ssl.SSLServerSocket;
@@ -11,8 +12,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,6 +29,11 @@ public class SSLServer implements Runnable, Observer {
      * Boolean to control if the server is opened
      */
     private final AtomicBoolean opened;
+
+    /**
+     * Listeners of the server
+     */
+    private final List<ProtocolListener> listeners;
 
     /**
      * Host of the server
@@ -58,6 +63,7 @@ public class SSLServer implements Runnable, Observer {
      */
     public SSLServer(final String host, final int port) {
         this.opened = new AtomicBoolean(false);
+        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new StoredListener());
         this.host = host;
         this.port = port;
         this.connections = new ConcurrentArrayList<>();
@@ -116,6 +122,7 @@ public class SSLServer implements Runnable, Observer {
                 final SSLSocket connectionSocket = (SSLSocket) serverSocket.accept();
                 final SSLManager monitor = new SSLManager(new SSLChannel(connectionSocket));
                 monitor.addObserver(this);
+                listeners.forEach(monitor::addObserver);
                 monitor.start();
 
                 connections.add(monitor);

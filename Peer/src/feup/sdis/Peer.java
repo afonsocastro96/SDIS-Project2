@@ -3,6 +3,8 @@ package feup.sdis;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
+import feup.sdis.protocol.messages.ProtocolMessage;
+import feup.sdis.protocol.messages.StoredMessage;
 
 import java.io.*;
 import java.net.SocketException;
@@ -53,6 +55,17 @@ public class Peer extends Node implements Observer {
             return;
         getInstance().getMonitor().addObserver(getInstance());
         getInstance().getMonitor().start();
+
+        try {
+            Thread.sleep(1000);
+            final ProtocolMessage message = new StoredMessage(getInstance().getId(), UUID.randomUUID(), (int)(Math.random() * 1000));
+            try {
+                getInstance().getMonitor().write(message.getBytes());
+            } catch (IOException e) {
+                Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
+            }
+        } catch (InterruptedException e) {
+        }
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");

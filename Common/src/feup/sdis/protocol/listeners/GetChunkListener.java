@@ -32,9 +32,8 @@ public class GetChunkListener extends ProtocolListener {
         try {
             message = new GetChunkParser().parse((byte[]) arg);
         } catch (MalformedMessageException e) {
+            Node.getLogger().log(Level.DEBUG, "Failed to parse GETCHUNK message. " + e.getMessage());
             return;
         }
-
-        Node.getLogger().log(Level.DEBUG, "Received a message " + message.getHeader() + " with body size of " + message.getBody().length);
     }
 }
