@@ -61,14 +61,19 @@ public abstract class Node {
     static UUID getSerialNumber() {
         Process process;
         try {
-            process = Runtime.getRuntime().exec(new String[] { "wmic", "csproduct", "get", "uuid" });
+            if(System.getProperty("os.name").toLowerCase().contains("win"))
+                process = Runtime.getRuntime().exec(new String[] { "wmic", "csproduct", "get", "uuid" });
+            else
+                process = Runtime.getRuntime().exec(new String[] { "dmidecode", "-s", "system-uuid" });
             process.getOutputStream().close();
         } catch (IOException e) {
             getLogger().log(Level.FATAL, "Could not retrieve the BIOS serial number. " + e.getMessage());
             return null;
         }
         final Scanner sc = new Scanner(process.getInputStream());
-        sc.next();
+        if(System.getProperty("os.name").toLowerCase().contains("win")) sc.next();
+        else if(!sc.hasNext())
+             throw new IllegalStateException("The program must be executed with root privileges.");
         return UUID.fromString(sc.next());
     }
 
