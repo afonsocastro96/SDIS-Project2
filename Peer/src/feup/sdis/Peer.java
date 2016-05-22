@@ -64,8 +64,7 @@ public class Peer extends Node implements Observer {
             } catch (IOException e) {
                 Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
             }
-        } catch (InterruptedException e) {
-        }
+        } catch (InterruptedException ignored) {}
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
