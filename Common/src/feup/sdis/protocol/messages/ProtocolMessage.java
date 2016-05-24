@@ -19,6 +19,11 @@ public abstract class ProtocolMessage {
         PUTCHUNK,
 
         /**
+         * File name message type
+         */
+        FILENAME,
+
+        /**
          * Stored message type
          */
         STORED,
