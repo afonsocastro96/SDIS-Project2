@@ -32,7 +32,7 @@ public class Logger {
     private final PrintWriter writer;
 
     /**
-     * Date formate of the log
+     * Date format of the log
      */
     private final DateFormat dateFormat;
 

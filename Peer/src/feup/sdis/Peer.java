@@ -59,7 +59,7 @@ public class Peer extends Node implements Observer {
         getInstance().getMonitor().start();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
             //final ProtocolMessage message = new StoredMessage(getInstance().getId(), UUID.randomUUID(), (int)(Math.random() * 1000));
             final ProtocolMessage message = new FileNameMessage(getInstance().getId(), UUID.randomUUID(), "Summertime.txt");
             try {

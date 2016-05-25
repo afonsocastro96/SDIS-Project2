@@ -121,7 +121,7 @@ public class SSLManager extends Observable implements Runnable {
      */
     public void write(byte[] data) throws IOException {
         if (!running.get())
-            throw new IOException();
+            throw new IOException("Service not running");
         channel.write(data);
     }
 }
