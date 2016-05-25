@@ -24,6 +24,14 @@ public class OkMessage extends ProtocolMessage{
     }
 
     /**
+     * Get the message of the Ok response
+     * @return message of the Ok response
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
      * Get the header of the message
      * @return header of the message
      */

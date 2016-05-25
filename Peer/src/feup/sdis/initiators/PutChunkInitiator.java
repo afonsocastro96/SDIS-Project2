@@ -34,7 +34,7 @@ public class PutChunkInitiator extends ProtocolInitiator {
             for (int chunkNo = 0; chunkNo < totalChunks; ++chunkNo) {
                 in.seek(chunkNo * MAXCHUNKSIZE);
                 int size = in.read(buffer);
-                PutChunkMessage message = new PutChunkMessage(Peer.getInstance().getId(), UUID.randomUUID(), chunkNo, replicationDeg, buffer);
+                PutChunkMessage message = new PutChunkMessage(UUID.randomUUID(), chunkNo, replicationDeg, buffer);
                 try {
                     Peer.getInstance().getMonitor().write(message.getBytes());
                 } catch (IOException e) {

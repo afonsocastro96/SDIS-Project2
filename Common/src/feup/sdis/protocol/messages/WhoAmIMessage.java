@@ -25,6 +25,14 @@ public class WhoAmIMessage extends ProtocolMessage {
     }
 
     /**
+     * Get the sender id
+     * @return if of the sender
+     */
+    public UUID getSenderId() {
+        return senderId;
+    }
+
+    /**
      * Get the header of the message
      * @return header of the message
      */

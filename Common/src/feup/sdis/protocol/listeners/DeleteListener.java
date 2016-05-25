@@ -24,13 +24,26 @@ public class DeleteListener extends ProtocolListener {
         if(!(o instanceof SSLManager))
             return;
 
-        if(!(arg instanceof byte[]))
+        if(!(arg instanceof Object[]))
             return;
 
+        // Validate data type of the objects
+        final Object[] objects = (Object[]) arg;
+        if(!(objects[0] instanceof String))
+            return;
+        if(!(objects[1] instanceof Integer))
+            return;
+        if(!(objects[2] instanceof byte[]))
+            return;
+
+        final String host = (String) objects[0];
+        final int port = (Integer) objects[1];
+        final byte[] message = (byte[]) objects[2];
+
         // Validate message
-        final ProtocolMessage message;
+        final ProtocolMessage protocolMessage;
         try {
-            message = new DeleteParser().parse((byte[]) arg);
+            protocolMessage = new DeleteParser().parse(message);
         } catch (MalformedMessageException e) {
             Node.getLogger().log(Level.DEBUG, "Failed to parse DELETE message. " + e.getMessage());
             return;

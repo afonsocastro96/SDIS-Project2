@@ -49,6 +49,14 @@ public class SSLManager extends Observable implements Runnable {
     }
 
     /**
+     * Check if the SSLManager is running
+     * @return true if is running
+     */
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    /**
      * Start monitoring the channel
      */
     public void start() {
@@ -88,26 +96,32 @@ public class SSLManager extends Observable implements Runnable {
         } catch (InterruptedException ignored) {
         }
 
+        // Save the host and port of the connection to the listeners
+        final Object[] objects = new Object[3];
+        objects[0] = channel.getHost();
+        objects[1] = channel.getPort();
+
         // Connect to the channel
         if (!channel.connect()) {
             setChanged();
-            notifyObservers(new SocketException());
+            objects[2] = new SocketException("Could not establish connection");
+            notifyObservers(objects);
             return;
         }
         retryDelay = 0;
         running.set(true);
 
         // Read messages from the channel
-        byte[] data;
         while (running.get()) {
             try {
-                data = channel.read();
+                objects[2] = channel.read();
                 setChanged();
-                notifyObservers(data);
+                notifyObservers(objects);
             } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
+                objects[2] = e;
                 setChanged();
-                notifyObservers(e);
+                notifyObservers(objects);
                 running.set(false);
             }
         }

@@ -25,7 +25,7 @@ public class WhoAmIParser extends ProtocolParser {
             throw new MalformedMessageException("Wrong number of arguments for the WHOAMI message: 3 arguments must be present");
         }
 
-        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.FILENAME.toString()))
+        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.WHOAMI.toString()))
             throw new MalformedMessageException("Wrong protocol");
 
         /* Validate version */

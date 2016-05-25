@@ -1,5 +1,6 @@
 package feup.sdis;
 
+import feup.sdis.initiators.WhoAmIInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
@@ -56,16 +57,15 @@ public class Peer extends Node implements Observer {
         getInstance().getMonitor().addObserver(getInstance());
         getInstance().getMonitor().start();
 
-        try {
-            Thread.sleep(1500);
-            //final ProtocolMessage message = new StoredMessage(getInstance().getId(), UUID.randomUUID(), (int)(Math.random() * 1000));
-            final ProtocolMessage message = new HasChunkMessage(UUID.randomUUID(), UUID.randomUUID());
+        // Send our UUID
+        while(!getInstance().getMonitor().isRunning()) {
             try {
-                getInstance().getMonitor().write(message.getBytes());
-            } catch (IOException e) {
-                Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
             }
-        } catch (InterruptedException ignored) {}
+        }
+        final WhoAmIInitiator initiator = new WhoAmIInitiator();
+        new Thread(initiator).start();
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
@@ -221,18 +221,23 @@ public class Peer extends Node implements Observer {
         if(!(o instanceof SSLManager))
             return;
 
-        if(arg == null)
-            return;
-
         final SSLManager monitor = (SSLManager) o;
 
-        if(arg instanceof EOFException) {
+        final Object[] objects = (Object[]) arg;
+        if(!(objects[0] instanceof String))
+            return;
+        if(!(objects[1] instanceof Integer))
+            return;
+
+        if(objects[2] instanceof EOFException) {
             Node.getLogger().log(Level.INFO, monitor.getChannel().getHost() + ":" + monitor.getChannel().getPort() + " has disconnected.");
-        } else if (arg instanceof SocketException) {
-        } else if (arg instanceof IOException) {
+        } else if(objects[2] instanceof SocketException) {
+        } else if(objects[2] instanceof IOException) {
             Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + ".");
+        } else {
+            return;
         }
 
-        getInstance().getMonitor().retry();
+        monitor.retry();
     }
 }

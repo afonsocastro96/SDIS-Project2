@@ -1,9 +1,9 @@
 package feup.sdis.network;
 
 import feup.sdis.Node;
+import feup.sdis.listeners.WhoAmIListener;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.listeners.*;
-import feup.sdis.utils.ConcurrentArrayList;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -53,7 +54,7 @@ public class SSLServer implements Runnable, Observer {
     /**
      * List with connected peers
      */
-    private final ConcurrentArrayList<SSLManager> connections;
+    private final Map<SSLManager, UUID> connections;
 
     /**
      * Constructor of SSLServer
@@ -63,10 +64,50 @@ public class SSLServer implements Runnable, Observer {
      */
     public SSLServer(final String host, final int port) {
         this.opened = new AtomicBoolean(false);
-        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new StoredListener(), new FileNameListener(), new OkListener(), new HasChunkListener(), new WhoAmIListener());
+        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new StoredListener(), new FileNameListener(), new HasChunkListener(), new WhoAmIListener());
         this.host = host;
         this.port = port;
-        this.connections = new ConcurrentArrayList<>();
+        this.connections = Collections.synchronizedMap(new HashMap<>());
+    }
+
+    /**
+     * Get a connection given a host and port
+     * @param host host to get the connection
+     * @param port port to get the connection
+     * @return connection with the given host and port
+     */
+    public SSLManager getConnection(final String host, final int port) {
+        for(Map.Entry<SSLManager, UUID> entry : connections.entrySet())
+            if(entry.getKey().getChannel().getHost().equalsIgnoreCase(host) && entry.getKey().getChannel().getPort() == port)
+                return entry.getKey();
+        return null;
+    }
+
+    /**
+     * Get the UUID of a given address
+     * @param host host address to get the UUID
+     * @param port port to get the UUID
+     * @return UUID with that host and address
+     */
+    public UUID getUUID(final String host, final int port) {
+        for(Map.Entry<SSLManager, UUID> entry : connections.entrySet())
+            if(entry.getKey().getChannel().getHost().equalsIgnoreCase(host) && entry.getKey().getChannel().getPort() == port)
+                return entry.getValue();
+        return null;
+    }
+
+    /**
+     * Set the UUID of a host and port
+     * @param host host to be set
+     * @param port port to be set
+     * @param uuid uuid of the host and port
+     */
+    public void setUUID(final String host, final int port, final UUID uuid) {
+        final SSLManager monitor = getConnection(host, port);
+        if(monitor == null)
+            return;
+
+        connections.put(monitor, uuid);
     }
 
     /**
@@ -125,7 +166,7 @@ public class SSLServer implements Runnable, Observer {
                 listeners.forEach(monitor::addObserver);
                 monitor.start();
 
-                connections.add(monitor);
+                connections.put(monitor, null);
 
                 Node.getLogger().log(Level.INFO, connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getPort() + " has connected (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
             } catch (SocketTimeoutException ignored) {
@@ -147,17 +188,20 @@ public class SSLServer implements Runnable, Observer {
         if(!(o instanceof SSLManager))
             return;
 
-        if(arg == null)
-            return;
-
         final SSLManager monitor = (SSLManager) o;
 
-        if(arg instanceof EOFException) {
-            connections.remove((SSLManager) o);
+        final Object[] objects = (Object[]) arg;
+        if(!(objects[0] instanceof String))
+            return;
+        if(!(objects[1] instanceof Integer))
+            return;
+
+        if(objects[2] instanceof EOFException) {
+            connections.remove(monitor);
             Node.getLogger().log(Level.INFO, monitor.getChannel().getHost() + ":" + monitor.getChannel().getPort() + " has disconnected (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
-        } else if (arg instanceof IOException) {
-            connections.remove((SSLManager) o);
-            Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + " (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
+        } else if(objects[2] instanceof IOException) {
+            connections.remove(monitor);
+            Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) objects[2]).getMessage() + " (" + connections.size() + "/" + MAX_CONNECTIONS + ")");
         }
     }
 }
