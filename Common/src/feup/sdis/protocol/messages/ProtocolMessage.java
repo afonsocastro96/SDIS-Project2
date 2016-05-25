@@ -85,11 +85,6 @@ public abstract class ProtocolMessage {
     private final double version;
 
     /**
-     * Id of the sender
-     */
-    private final UUID senderId;
-
-    /**
      * Id of the file
      */
     private final UUID fileId;
@@ -113,60 +108,60 @@ public abstract class ProtocolMessage {
      * Constructor of ProtocolMessage
      * @param messageType type of the message
      * @param version version of the message
-     * @param senderId id of the sender
-     * @param fileId id of the file
      */
-    public ProtocolMessage(final Type messageType, final double version, final UUID senderId, final UUID fileId) {
-        this(messageType, version, senderId, fileId, -1);
+    public ProtocolMessage(final Type messageType, final double version){
+        this(messageType, version, null);
     }
 
     /**
      * Constructor of ProtocolMessage
      * @param messageType type of the message
      * @param version version of the message
-     * @param senderId id of the sender
+     * @param fileId id of the file
+     */
+    public ProtocolMessage(final Type messageType, final double version, final UUID fileId) {
+        this(messageType, version, fileId, -1);
+    }
+
+    /**
+     * Constructor of ProtocolMessage
+     * @param messageType type of the message
+     * @param version version of the message
      * @param fileId id of the file
      * @param chunkNo number of the chunk
      */
-    public ProtocolMessage(final Type messageType, final double version, final UUID senderId, final UUID fileId, final int chunkNo) {
-        this(messageType, version, senderId, fileId, chunkNo, new byte[] {});
+    public ProtocolMessage(final Type messageType, final double version, final UUID fileId, final int chunkNo) {
+        this(messageType, version, fileId, chunkNo, new byte[] {});
     }
 
     /**
      * Constructor of ProtocolMessage
      * @param messageType type of the message
      * @param version version of the message
-     * @param senderId id of the sender
      * @param fileId id of the file
      * @param chunkNo number of the chunk
      * @param body body of the message
      */
-    public ProtocolMessage(final Type messageType, final double version, final UUID senderId, final UUID fileId, final int chunkNo, final byte[] body) {
-        this(messageType, version, senderId, fileId, chunkNo, -1, body);
+    public ProtocolMessage(final Type messageType, final double version, final UUID fileId, final int chunkNo, final byte[] body) {
+        this(messageType, version, fileId, chunkNo, -1, body);
     }
 
     /**
      * Constructor of ProtocolMessage
      * @param messageType type of the message
      * @param version version of the message
-     * @param senderId id of the sender
      * @param fileId id of the file
      * @param chunkNo number of the chunk
      * @param replicationDeg replication degree
      * @param body body of the message
      */
-    public ProtocolMessage(final Type messageType, final double version, final UUID senderId, final UUID fileId, final int chunkNo, final int replicationDeg, final byte[] body) {
+    public ProtocolMessage(final Type messageType, final double version, final UUID fileId, final int chunkNo, final int replicationDeg, final byte[] body) {
         this.messageType = messageType;
         this.version = version;
-        this.senderId = senderId;
         this.fileId = fileId;
         this.chunkNo = chunkNo;
         this.replicationDeg = replicationDeg;
         this.body = body;
-    }
-
-    public ProtocolMessage(final Type messageType, final double version){
-        this(messageType, version, null, null);
     }
 
     /**
@@ -177,7 +172,6 @@ public abstract class ProtocolMessage {
         StringJoiner sj = new StringJoiner(" ", "", CRLF);
         sj.add(messageType.toString())
                 .add("" + version)
-                .add("" + senderId)
                 .add("" + (fileId != null ? fileId : ""))
                 .add("" + (chunkNo >= 0 ? chunkNo : ""))
                 .add("" + (replicationDeg >= 0 ? replicationDeg : ""));
@@ -207,14 +201,6 @@ public abstract class ProtocolMessage {
      */
     public double getVersion() {
         return version;
-    }
-
-    /**
-     * Get the sender id of the message
-     * @return sender id of the message
-     */
-    public UUID getSenderId() {
-        return senderId;
     }
 
     /**

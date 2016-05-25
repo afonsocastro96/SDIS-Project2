@@ -5,10 +5,15 @@ import feup.sdis.protocol.Protocol;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 25/05/2016.
+ * Has chunk message
  */
 public class HasChunkMessage extends ProtocolMessage {
-    public HasChunkMessage(UUID senderId, UUID fileId) {
-        super(Type.HASCHUNK, Protocol.VERSION, senderId, fileId);
+
+    /**
+     * Constructor of HasChunkMessage
+     * @param fileId id of the file
+     */
+    public HasChunkMessage(final UUID fileId) {
+        super(Type.HASCHUNK, Protocol.VERSION, fileId);
     }
 }

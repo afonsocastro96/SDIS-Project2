@@ -6,7 +6,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 23/05/2016.
+ * File name message
  */
 public class FileNameMessage extends ProtocolMessage {
     /**
@@ -16,21 +16,23 @@ public class FileNameMessage extends ProtocolMessage {
 
     /**
      * FileNameMessage constructor
-     * @param senderId id of sender.
      * @param fileId id of file to send.
      * @param fileName name of file.
      */
-    public FileNameMessage(UUID senderId, UUID fileId, String fileName){
-        super(Type.FILENAME, Protocol.VERSION, senderId, fileId);
+    public FileNameMessage(UUID fileId, String fileName){
+        super(Type.FILENAME, Protocol.VERSION, fileId);
         this.fileName = fileName;
     }
 
+    /**
+     * Get the header of the message
+     * @return header of the message
+     */
     @Override
     public String getHeader(){
         StringJoiner sj = new StringJoiner(" ", "", CRLF);
         sj.add(getMessageType().toString())
                 .add("" + getVersion())
-                .add("" + getSenderId())
                 .add("" + getFileId())
                 .add("" + fileName);
 

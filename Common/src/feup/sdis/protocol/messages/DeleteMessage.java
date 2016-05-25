@@ -12,10 +12,9 @@ public class DeleteMessage extends ProtocolMessage {
 
     /**
      * Constructor of DeleteMessage
-     * @param senderId id of the sender
      * @param fileId id of the file
      */
-    public DeleteMessage(final UUID senderId, final UUID fileId) {
-        super(Type.DELETE, Protocol.VERSION, senderId, fileId);
+    public DeleteMessage(final UUID fileId) {
+        super(Type.DELETE, Protocol.VERSION, fileId);
     }
 }

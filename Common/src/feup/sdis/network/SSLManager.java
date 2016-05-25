@@ -70,6 +70,8 @@ public class SSLManager extends Observable implements Runnable {
             retryDelay = 1000;
         else if (retryDelay < 60000)
             retryDelay *= 2;
+        else
+            retryDelay = 60000;
 
         Node.getLogger().log(Level.INFO, "Retrying to connect to the server in " + (retryDelay / 1000) + " seconds.");
 

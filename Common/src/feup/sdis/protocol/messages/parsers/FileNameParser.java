@@ -7,17 +7,23 @@ import feup.sdis.protocol.messages.ProtocolMessage;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 24/05/2016.
+ * File name parser
  */
 public class FileNameParser extends ProtocolParser {
-    /* FILENAME version senderID fileID fileName */
+
+    /**
+     * Parse a message
+     * @param message message to be parsed
+     * @return parsed protocol message
+     * @throws MalformedMessageException when message is malformed
+     */
     @Override
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);
-        if (header.size() != 5){
-            throw new MalformedMessageException("Wrong number of arguments for the FILENAME message: 5 arguments must be present");
-        }
+        if (header.size() != 4)
+            throw new MalformedMessageException("Wrong number of arguments for the FILENAME message: 4 arguments must be present");
 
+        /* Validate protocol */
         if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.FILENAME.toString()))
             throw new MalformedMessageException("Wrong protocol");
 
@@ -25,18 +31,14 @@ public class FileNameParser extends ProtocolParser {
         if(!validVersion(header.get(1)))
             throw new MalformedMessageException("Version must follow the following format: <n>.<m>");
 
-        /* Validate sender ID */
-        if (!validSenderId(header.get(2)))
-            throw new MalformedMessageException("Sender ID must be an UUID");
-
         /* Validate file ID */
-        if (!validFileId(header.get(3)))
+        if (!validFileId(header.get(2)))
             throw new MalformedMessageException("File ID must be an UUID");
 
         /* Validate file name */
-        if(!validFileName(header.get(4)))
+        if(!validFileName(header.get(3)))
             throw new MalformedMessageException("File name must have between 1 and 256 characters");
 
-        return new FileNameMessage(UUID.fromString(header.get(2)), UUID.fromString(header.get(3)), header.get(4));
+        return new FileNameMessage(UUID.fromString(header.get(2)), header.get(3));
     }
 }
