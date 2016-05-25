@@ -46,7 +46,12 @@ public abstract class ProtocolMessage {
         /**
          * Removed message type
          */
-        REMOVED
+        REMOVED,
+
+        /**
+         * OK message type
+         */
+        OK
     }
 
     /**
@@ -62,7 +67,7 @@ public abstract class ProtocolMessage {
     /**
      * CRLF string
      */
-    private final static String CRLF = new String(new byte[]{CR, LF}, StandardCharsets.US_ASCII);
+    protected final static String CRLF = new String(new byte[]{CR, LF}, StandardCharsets.US_ASCII);
 
     /**
      * Message type
@@ -153,6 +158,10 @@ public abstract class ProtocolMessage {
         this.chunkNo = chunkNo;
         this.replicationDeg = replicationDeg;
         this.body = body;
+    }
+
+    public ProtocolMessage(final Type messageType, final double version){
+        this(messageType, version, null, null);
     }
 
     /**

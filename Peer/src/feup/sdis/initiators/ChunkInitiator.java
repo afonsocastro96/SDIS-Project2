@@ -1,4 +1,4 @@
-package feup.sdis.protocol.initiators;
+package feup.sdis.initiators;
 
 /**
  * Created by joaos on 14/05/2016.

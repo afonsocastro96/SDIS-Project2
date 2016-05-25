@@ -1,4 +1,4 @@
-package feup.sdis.protocol.initiators;
+package feup.sdis.initiators;
 
 /**
  * Protocol Listener
