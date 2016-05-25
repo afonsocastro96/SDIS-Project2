@@ -77,7 +77,7 @@ public abstract class ProtocolMessage {
     /**
      * CRLF string
      */
-    protected final static String CRLF = new String(new byte[]{CR, LF}, StandardCharsets.US_ASCII);
+    public final static String CRLF = new String(new byte[]{CR, LF}, StandardCharsets.US_ASCII);
 
     /**
      * Message type

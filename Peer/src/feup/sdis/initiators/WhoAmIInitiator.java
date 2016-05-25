@@ -42,6 +42,6 @@ public class WhoAmIInitiator extends ProtocolInitiator {
         }
 
         Peer.getInstance().getMonitor().deleteObserver(listener);
-        Node.getLogger().log(Level.DEBUG, "Server has received our UUID.");
+        Node.getLogger().log(Level.INFO, "Server has acknowledged our ID");
     }
 }

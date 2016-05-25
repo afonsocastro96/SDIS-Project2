@@ -20,7 +20,7 @@ public class OkMessage extends ProtocolMessage{
      */
     public OkMessage(final String message) {
         super(Type.OK, Protocol.VERSION);
-        this.message = message;
+        this.message = message + ProtocolMessage.CRLF;
     }
 
     /**
