@@ -33,6 +33,10 @@ public class FileNameParser extends ProtocolParser {
         if (!validFileId(header.get(3)))
             throw new MalformedMessageException("File ID must be an UUID");
 
+        /* Validate file name */
+        if(!validFileName(header.get(4)))
+            throw new MalformedMessageException("File name must have between 1 and 256 characters");
+
         return new FileNameMessage(UUID.fromString(header.get(2)), UUID.fromString(header.get(3)), header.get(4));
     }
 }

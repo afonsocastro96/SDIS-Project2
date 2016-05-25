@@ -4,9 +4,7 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.Protocol;
-import feup.sdis.protocol.messages.FileNameMessage;
-import feup.sdis.protocol.messages.ProtocolMessage;
-import feup.sdis.protocol.messages.StoredMessage;
+import feup.sdis.protocol.messages.*;
 
 import java.io.*;
 import java.net.SocketException;
@@ -61,7 +59,7 @@ public class Peer extends Node implements Observer {
         try {
             Thread.sleep(1500);
             //final ProtocolMessage message = new StoredMessage(getInstance().getId(), UUID.randomUUID(), (int)(Math.random() * 1000));
-            final ProtocolMessage message = new FileNameMessage(getInstance().getId(), UUID.randomUUID(), "Summertime.txt");
+            final ProtocolMessage message = new HasChunkMessage(UUID.randomUUID(), UUID.randomUUID());
             try {
                 getInstance().getMonitor().write(message.getBytes());
             } catch (IOException e) {

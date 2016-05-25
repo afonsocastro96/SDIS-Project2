@@ -51,7 +51,12 @@ public abstract class ProtocolMessage {
         /**
          * OK message type
          */
-        OK
+        OK,
+
+        /**
+         * HASCHUNK message type
+         */
+        HASCHUNK
     }
 
     /**

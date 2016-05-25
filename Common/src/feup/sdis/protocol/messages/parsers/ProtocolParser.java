@@ -99,4 +99,11 @@ public abstract class ProtocolParser {
     protected boolean validReplicationDeg(String replicationDeg) {
         return replicationDeg.matches("^\\d$");
     }
+
+    /**
+     * Check if the file name is valid
+     * @param fileName file name to check
+     * @return true if valid, false otherwise
+     */
+    protected boolean validFileName(String fileName) {return fileName.matches("^.{1,256}$"); }
 }

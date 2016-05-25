@@ -5,29 +5,28 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ProtocolMessage;
-import feup.sdis.protocol.messages.parsers.OkParser;
+import feup.sdis.protocol.messages.parsers.HasChunkParser;
 
 import java.util.Observable;
 
 /**
  * Created by Afonso on 25/05/2016.
  */
-public class OkListener extends ProtocolListener {
+public class HasChunkListener extends ProtocolListener {
     @Override
     public void update(Observable o, Object arg) {
         if(!(o instanceof SSLManager))
             return;
-
         if(!(arg instanceof byte[]))
             return;
 
         // Validate message
         final ProtocolMessage message;
         try {
-            message = new OkParser().parse((byte[]) arg);
+            message = new HasChunkParser().parse((byte[]) arg);
             Node.getLogger().log(Level.DEBUG, message.getHeader());
         } catch (MalformedMessageException e) {
-            Node.getLogger().log(Level.DEBUG, "Failed to parse OK message. " + e.getMessage());
+            Node.getLogger().log(Level.DEBUG, "Failed to parse HASCHUNK message. " + e.getMessage());
             return;
         }
     }
