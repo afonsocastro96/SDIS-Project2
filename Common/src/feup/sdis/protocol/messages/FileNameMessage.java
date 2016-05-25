@@ -12,7 +12,7 @@ public class FileNameMessage extends ProtocolMessage {
     /**
      * The file to transfer's name.
      */
-    private String fileName;
+    private final String fileName;
 
     /**
      * FileNameMessage constructor

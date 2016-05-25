@@ -7,9 +7,16 @@ import feup.sdis.protocol.messages.WhoAmIMessage;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 25/05/2016.
+ * Who am I parser
  */
 public class WhoAmIParser extends ProtocolParser {
+
+    /**
+     * Parse a message
+     * @param message message to be parsed
+     * @return parsed protocol message
+     * @throws MalformedMessageException when message is malformed
+     */
     @Override
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);

@@ -6,16 +6,28 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 25/05/2016.
+ * Who am I message
  */
 public class WhoAmIMessage extends ProtocolMessage {
-    UUID senderId;
-    
-    public WhoAmIMessage(UUID senderId) {
+
+    /**
+     * UUID of the sender
+     */
+    private final UUID senderId;
+
+    /**
+     * Constructor of WhoAmIMessage
+     * @param senderId id of the sender
+     */
+    public WhoAmIMessage(final UUID senderId) {
         super(Type.WHOAMI, Protocol.VERSION);
         this.senderId = senderId;
     }
 
+    /**
+     * Get the header of the message
+     * @return header of the message
+     */
     @Override
     public String getHeader(){
         StringJoiner sj = new StringJoiner(" ", "", CRLF);

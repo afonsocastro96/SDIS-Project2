@@ -12,7 +12,7 @@ public class OkMessage extends ProtocolMessage{
     /**
      * Request message for the OK
      */
-    final String message;
+    private final String message;
 
     /**
      * Constructor of OKMessage
