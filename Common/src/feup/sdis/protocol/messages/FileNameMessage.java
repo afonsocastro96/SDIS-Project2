@@ -1,6 +1,8 @@
 package feup.sdis.protocol.messages;
 
 import feup.sdis.protocol.Protocol;
+
+import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
@@ -21,5 +23,17 @@ public class FileNameMessage extends ProtocolMessage {
     public FileNameMessage(UUID senderId, UUID fileId, String fileName){
         super(Type.FILENAME, Protocol.VERSION, senderId, fileId);
         this.fileName = fileName;
+    }
+
+    @Override
+    public String getHeader(){
+        StringJoiner sj = new StringJoiner(" ", "", CRLF);
+        sj.add(getMessageType().toString())
+                .add("" + getVersion())
+                .add("" + getSenderId())
+                .add("" + getFileId())
+                .add("" + fileName);
+
+        return sj.toString();
     }
 }
