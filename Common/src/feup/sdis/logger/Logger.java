@@ -4,6 +4,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Logger Class
@@ -59,6 +60,7 @@ public class Logger {
         this.minLevel = minLevel;
         this.writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(LOG_FILE, true), "UTF-8"));
         this.dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        this.dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
