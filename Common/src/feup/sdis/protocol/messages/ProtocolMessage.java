@@ -54,6 +54,11 @@ public abstract class ProtocolMessage {
         OK,
 
         /**
+         * WHOAMI message type
+         */
+        WHOAMI,
+
+        /**
          * HASCHUNK message type
          */
         HASCHUNK
