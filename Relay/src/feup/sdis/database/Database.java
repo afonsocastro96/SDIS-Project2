@@ -192,7 +192,7 @@ public abstract class Database {
         for (final Object parameter : parameters)
             preparedStatement.setObject(++index, parameter);
 
-        int numberRowsUpdated = preparedStatement.executeUpdate();
+        final int numberRowsUpdated = preparedStatement.executeUpdate();
         close(preparedStatement);
 
         return numberRowsUpdated;
