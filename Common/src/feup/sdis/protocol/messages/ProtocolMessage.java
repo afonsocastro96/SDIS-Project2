@@ -169,12 +169,12 @@ public abstract class ProtocolMessage {
         this.body = body;
     }
 
-    /**
+    /**c
      * Get the header of the message
      * @return header of the message
      */
     public String getHeader() {
-        StringJoiner sj = new StringJoiner(" ", "", CRLF);
+        StringJoiner sj = new StringJoiner(" ");
         sj.add(messageType.toString())
                 .add("" + version)
                 .add("" + (fileId != null ? fileId : ""))
@@ -237,7 +237,7 @@ public abstract class ProtocolMessage {
      * @return bytes of the message
      */
     public byte[] getBytes() {
-        byte [] headerBytes = getHeader().concat(CRLF).getBytes(StandardCharsets.US_ASCII);
+        byte [] headerBytes = getHeader().concat(CRLF + CRLF).getBytes(StandardCharsets.US_ASCII);
 
         byte [] bytes = new byte[headerBytes.length + body.length];
         System.arraycopy(headerBytes, 0, bytes, 0, headerBytes.length);

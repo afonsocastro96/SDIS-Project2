@@ -30,7 +30,7 @@ public class FileNameMessage extends ProtocolMessage {
      */
     @Override
     public String getHeader(){
-        StringJoiner sj = new StringJoiner(" ", "", CRLF);
+        StringJoiner sj = new StringJoiner(" ");
         sj.add(getMessageType().toString())
                 .add("" + getVersion())
                 .add("" + getFileId())

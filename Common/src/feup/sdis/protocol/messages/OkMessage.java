@@ -20,7 +20,7 @@ public class OkMessage extends ProtocolMessage{
      */
     public OkMessage(final String message) {
         super(Type.OK, Protocol.VERSION);
-        this.message = message + ProtocolMessage.CRLF;
+        this.message = message;
     }
 
     /**
@@ -37,7 +37,7 @@ public class OkMessage extends ProtocolMessage{
      */
     @Override
     public String getHeader(){
-        StringJoiner sj = new StringJoiner(" ", "", CRLF);
+        StringJoiner sj = new StringJoiner(" ");
         sj.add(getMessageType().toString())
                 .add("" + getVersion())
                 .add("" + message);
