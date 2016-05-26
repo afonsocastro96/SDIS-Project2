@@ -64,6 +64,8 @@ public class OkListener extends ProtocolListener {
     public void update(Observable o, Object arg) {
         if(!(o instanceof SSLManager))
             return;
+        if(!(arg instanceof Object[]))
+            return;
 
         // Validate data type of the objects
         final Object[] objects = (Object[]) arg;
