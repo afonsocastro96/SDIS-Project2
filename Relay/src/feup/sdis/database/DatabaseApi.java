@@ -1,6 +1,8 @@
 package feup.sdis.database;
 
+import feup.sdis.Node;
 import feup.sdis.Relay;
+import feup.sdis.logger.Level;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,13 +23,14 @@ public class DatabaseApi {
         if(database == null)
             return false;
 
-        final String query = "SELECT serial_number FROM peers WHERE serial_number = ?;";
+        final String query = "SELECT * FROM peers WHERE serial_number = ?;";
         final Object[] params = new Object[]{serialNumber.toString()};
         ResultSet resultSet = null;
         try {
             resultSet = database.executeQuery(query, params);
-            return resultSet.isBeforeFirst();
-        } catch (SQLException ignored) {
+            return resultSet.next();
+        } catch (final SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Query could not be executed. " + e.getMessage());
             return false;
         } finally {
             if(resultSet != null)
@@ -50,7 +53,12 @@ public class DatabaseApi {
 
         final String query = "INSERT INTO peers VALUES (?);";
         final Object[] params = new Object[]{serialNumber.toString()};
-        return database.executeUpdate(query, params) > 0;
+        try {
+            return database.executeUpdate(query, params) > 0;
+        } catch (final SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Update could not be executed. " + e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -65,6 +73,11 @@ public class DatabaseApi {
 
         final String query = "DELETE FROM peers WHERE serial_number = ?;";
         final Object[] params = new Object[]{serialNumber.toString()};
-        return database.executeUpdate(query, params) > 0;
+        try {
+            return database.executeUpdate(query, params) > 0;
+        } catch (final SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Update could not be executed. " + e.getMessage());
+            return false;
+        }
     }
 }

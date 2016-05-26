@@ -92,6 +92,8 @@ public abstract class Database {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
 
+            keepAlive();
+
             Node.getLogger().log(Level.INFO, "Established connection with the database.");
             return true;
         } catch (final SQLException | ClassNotFoundException e) {
@@ -166,24 +168,14 @@ public abstract class Database {
      * @param parameters parameters of the prepared statement
      * @return result of the given query
      */
-    public ResultSet executeQuery(final String sql, final Object[] parameters) {
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+    public ResultSet executeQuery(final String sql, final Object[] parameters) throws SQLException {
+        final PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            int index = 0;
-            for (final Object parameter : parameters)
-                preparedStatement.setObject(++index, parameter);
+        int index = 0;
+        for (final Object parameter : parameters)
+            preparedStatement.setObject(++index, parameter);
 
-            resultSet = preparedStatement.executeQuery();
-        } catch (final SQLException e) {
-            Node.getLogger().log(Level.ERROR, "Query could not be executed. " + e.getMessage());
-        } finally {
-            close(preparedStatement);
-        }
-
-        return resultSet;
+        return preparedStatement.executeQuery();
     }
 
     /**
@@ -193,23 +185,36 @@ public abstract class Database {
      * @param parameters parameters of the prepared statement
      * @return number of rows updated
      */
-    public int executeUpdate(final String sql, final Object[] parameters) {
-        int numberRowsUpdated = -1;
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+    public int executeUpdate(final String sql, final Object[] parameters) throws SQLException {
+        final PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            int index = 0;
-            for (final Object parameter : parameters)
-                preparedStatement.setObject(++index, parameter);
+        int index = 0;
+        for (final Object parameter : parameters)
+            preparedStatement.setObject(++index, parameter);
 
-            numberRowsUpdated = preparedStatement.executeUpdate();
-        } catch (final SQLException e) {
-            Node.getLogger().log(Level.ERROR, "Update could not be executed. " + e.getMessage());
-        } finally {
-            close(preparedStatement);
-        }
+        int numberRowsUpdated = preparedStatement.executeUpdate();
+        close(preparedStatement);
 
         return numberRowsUpdated;
+    }
+
+    /**
+     * Keep the connection alive
+     */
+    public void keepAlive() {
+        new Thread(() -> {
+            while (!isClosed()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {
+                }
+
+                try {
+                    executeQuery("SELECT 1;", new Object[0]);
+                } catch (SQLException ignored) {
+                }
+            }
+            connect();
+        }).start();
     }
 }
