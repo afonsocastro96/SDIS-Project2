@@ -55,31 +55,6 @@ public class DatabaseApi {
         return executeUpdate(query, params);
     }
 
-    /**
-     * Get the replicas of a given peer
-     * @param serialNumber serial number of the peer
-     * @return list with all replicas of the peer
-     */
-    public List<Integer> getReplicas(final UUID serialNumber) {
-        final String query = "SELECT file_chunk FROM replicas WHERE peer = ?;";
-        final Object[] params = new Object[]{serialNumber.toString()};
-
-        final ResultSet result = executeQuery(query, params);
-        if(result == null)
-            return null;
-
-        try {
-            final List<Integer> chunks = new ArrayList<>();
-            while(result.next())
-                chunks.add(result.getInt("file_chunk"));
-
-            return chunks;
-        } catch (SQLException e) {
-            Node.getLogger().log(Level.ERROR, "Could get the file id. " + e.getMessage());
-            return null;
-        }
-    }
-
     /*
         FILES TABLE
      */
@@ -156,6 +131,43 @@ public class DatabaseApi {
             return UUID.fromString(result.getString("uuid"));
         } catch (SQLException e) {
             Node.getLogger().log(Level.ERROR, "Could get the file id. " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get a list with the IDs of all the chunks of a file
+     * @param serialNumber serial number of the peer that owns the file
+     * @param path path of the file
+     * @return list with all the chunk ids of that file
+     */
+    public static List<Integer> getChunks(final UUID serialNumber, final String path) {
+        final UUID uuid = getFileId(serialNumber, path);
+
+        return getChunks(uuid);
+    }
+
+    /**
+     * Get all the file ids of a peer
+     * @param serialNumber serial number of the peer
+     * @return list with all the file ids of a peer
+     */
+    public static List<UUID> getPeerFiles(final UUID serialNumber) {
+        final String query = "SELECT uuid FROM files WHERE peer = ?;";
+        final Object[] params = new Object[]{serialNumber.toString()};
+
+        final ResultSet result = executeQuery(query, params);
+        if(result == null)
+            return null;
+
+        try {
+            final List<UUID> files = new ArrayList<>();
+            while(result.next())
+                files.add(UUID.fromString(result.getString("uuid")));
+
+            return files;
+        } catch (SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Could get the files of a peer. " + e.getMessage());
             return null;
         }
     }
@@ -263,6 +275,31 @@ public class DatabaseApi {
         }
     }
 
+    /**
+     * Get a list with the IDs of all the chunks of a file
+     * @param file id of the file to get the chunks
+     * @return list with all the chunk ids of that file
+     */
+    public static List<Integer> getChunks(final UUID file) {
+        final String query = "SELECT id FROM chunks WHERE file = ?;";
+        final Object[] params = new Object[]{file.toString()};
+
+        final ResultSet result = executeQuery(query, params);
+        if(result == null)
+            return null;
+
+        try {
+            final List<Integer> chunks = new ArrayList<>();
+            while(result.next())
+                chunks.add(result.getInt("id"));
+
+            return chunks;
+        } catch (SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Could get the chunks of a file. " + e.getMessage());
+            return null;
+        }
+    }
+
     /*
         REPLICAS TABLE
      */
@@ -326,6 +363,56 @@ public class DatabaseApi {
         } catch (SQLException e) {
             Node.getLogger().log(Level.ERROR, "Could get the replication degree of a chunk. " + e.getMessage());
             return -1;
+        }
+    }
+
+    /**
+     * Get the peers that has replicated a given chunk
+     * @param chunkId id of the file chunk to get the peers
+     * @return peers with that chunk or null in case of error
+     */
+    public static List<UUID> getChunkPeers(final int chunkId) {
+        final String query = "SELECT peer FROM replicas WHERE file_chunk = ?;";
+        final Object[] params = new Object[]{chunkId};
+
+        final ResultSet result = executeQuery(query, params);
+        if(result == null)
+            return null;
+
+        try {
+            final List<UUID> peers = new ArrayList<>();
+            while(result.next())
+                peers.add(UUID.fromString(result.getString("peer")));
+
+            return peers;
+        } catch (SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Could get the peers that has the chunk. " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get the replicas of a given peer
+     * @param serialNumber serial number of the peer
+     * @return list with all replicas of the peer
+     */
+    public List<Integer> getPeerReplicas(final UUID serialNumber) {
+        final String query = "SELECT file_chunk FROM replicas WHERE peer = ?;";
+        final Object[] params = new Object[]{serialNumber.toString()};
+
+        final ResultSet result = executeQuery(query, params);
+        if(result == null)
+            return null;
+
+        try {
+            final List<Integer> chunks = new ArrayList<>();
+            while(result.next())
+                chunks.add(result.getInt("file_chunk"));
+
+            return chunks;
+        } catch (SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Could get the replicas of a peer. " + e.getMessage());
+            return null;
         }
     }
 
