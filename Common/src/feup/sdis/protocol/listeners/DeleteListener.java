@@ -23,7 +23,6 @@ public class DeleteListener extends ProtocolListener {
     public void update(Observable o, Object arg) {
         if(!(o instanceof SSLManager))
             return;
-
         if(!(arg instanceof Object[]))
             return;
 
