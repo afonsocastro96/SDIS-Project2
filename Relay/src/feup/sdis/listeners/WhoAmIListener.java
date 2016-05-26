@@ -2,6 +2,7 @@ package feup.sdis.listeners;
 
 import feup.sdis.Node;
 import feup.sdis.Relay;
+import feup.sdis.database.DatabaseApi;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.network.SSLServer;
@@ -57,13 +58,20 @@ public class WhoAmIListener extends ProtocolListener {
             return;
         }
 
-        // Save the UUID
+        // Get needed instances
         final SSLServer server = Relay.getInstance().getServer();
         final SSLManager monitor = server.getConnection(host, port);
         if(monitor == null)
             return;
 
         final UUID senderId = ((WhoAmIMessage) protocolMessage).getSenderId();
+
+        // Save in the database
+        if(!DatabaseApi.hasPeer(senderId))
+            if(!DatabaseApi.addPeer(senderId))
+                return;
+
+        // Save the UUID
         server.setUUID(host, port, senderId);
 
         // Send response to the sender
