@@ -1,9 +1,9 @@
 package feup.sdis;
+
 import feup.sdis.database.Database;
 import feup.sdis.database.types.DatabaseType;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLServer;
-
 
 import java.io.*;
 import java.util.Properties;

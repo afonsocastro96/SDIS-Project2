@@ -100,9 +100,9 @@ public abstract class ProtocolMessage {
     private final int chunkNo;
 
     /**
-     * Replication degree
+     * Minimum replicas
      */
-    private final int replicationDeg;
+    private final int minReplicas;
 
     /**
      * Body of the message
@@ -157,15 +157,15 @@ public abstract class ProtocolMessage {
      * @param version version of the message
      * @param fileId id of the file
      * @param chunkNo number of the chunk
-     * @param replicationDeg replication degree
+     * @param minReplicas minimum replicas
      * @param body body of the message
      */
-    public ProtocolMessage(final Type messageType, final double version, final UUID fileId, final int chunkNo, final int replicationDeg, final byte[] body) {
+    public ProtocolMessage(final Type messageType, final double version, final UUID fileId, final int chunkNo, final int minReplicas, final byte[] body) {
         this.messageType = messageType;
         this.version = version;
         this.fileId = fileId;
         this.chunkNo = chunkNo;
-        this.replicationDeg = replicationDeg;
+        this.minReplicas = minReplicas;
         this.body = body;
     }
 
@@ -179,7 +179,7 @@ public abstract class ProtocolMessage {
                 .add("" + version)
                 .add("" + (fileId != null ? fileId : ""))
                 .add("" + (chunkNo >= 0 ? chunkNo : ""))
-                .add("" + (replicationDeg >= 0 ? replicationDeg : ""));
+                .add("" + (minReplicas >= 0 ? minReplicas : ""));
 
         return sj.toString();
     }
@@ -225,11 +225,11 @@ public abstract class ProtocolMessage {
     }
 
     /**
-     * Get the replication degree of the message
-     * @return replication degree of the message
+     * Get the minimum replicas of the message
+     * @return minimum replicas of the message
      */
-    public int getReplicationDeg() {
-        return replicationDeg;
+    public int getMinReplicas() {
+        return minReplicas;
     }
 
     /**

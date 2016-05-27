@@ -16,11 +16,6 @@ import java.util.Observable;
 public class OkListener extends ProtocolListener {
 
     /**
-     * Flag to check if we have already received the expected response
-     */
-    private boolean receivedResponse;
-
-    /**
      * Host where the Ok should come
      */
     private final String host;
@@ -37,6 +32,8 @@ public class OkListener extends ProtocolListener {
 
     /**
      * Constructor of OkListener
+     * @param host host from where the Ok should come
+     * @param port port from where the Ok should come
      * @param message message corresponding to the Ok response
      */
     public OkListener(final String host, final int port, final String message) {
@@ -44,14 +41,6 @@ public class OkListener extends ProtocolListener {
         this.host = host;
         this.port = port;
         this.message = message;
-    }
-
-    /**
-     * Check if we have received the expected response
-     * @return true if we received the expected response
-     */
-    public boolean hasReceivedResponse() {
-        return receivedResponse;
     }
 
     /**

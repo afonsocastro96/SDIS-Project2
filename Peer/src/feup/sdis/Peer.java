@@ -4,17 +4,9 @@ import feup.sdis.initiators.WhoAmIInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
-import feup.sdis.protocol.Protocol;
-import feup.sdis.protocol.messages.*;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import java.io.*;
-import java.math.BigInteger;
 import java.net.SocketException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;

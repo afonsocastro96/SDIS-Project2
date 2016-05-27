@@ -3,7 +3,7 @@ package feup.sdis.initiators;
 import feup.sdis.Node;
 import feup.sdis.Peer;
 import feup.sdis.logger.Level;
-import feup.sdis.protocol.listeners.OkListener;
+import feup.sdis.protocol.listeners.ProtocolListener;
 import feup.sdis.protocol.messages.ProtocolMessage;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public abstract class ProtocolInitiator implements Runnable {
     /**
      * Listener for the reception of the message
      */
-    protected OkListener listener;
+    protected ProtocolListener listener;
 
     /**
      * Number of attempts to send the message
@@ -110,5 +110,38 @@ public abstract class ProtocolInitiator implements Runnable {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Runnable of ProtocolInitiator
+     */
+    @Override
+    public void run() {
+        Peer.getInstance().getMonitor().addObserver(listener);
+
+        while(!listener.hasReceivedResponse()){
+            if(getAttempts() >= MAX_ATTEMPTS)
+                break;
+
+            if(getRounds() == 0){
+                sendMessage(message);
+                increaseAttempts();
+            }
+
+            increaseRounds();
+            if(getRounds() >= MAX_ROUNDS)
+                resetRounds();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {}
+        }
+
+        Peer.getInstance().getMonitor().deleteObserver(listener);
+
+        if(listener.hasReceivedResponse())
+            Node.getLogger().log(Level.DEBUG, "Server received the message " + message.getHeader());
+        else
+            Node.getLogger().log(Level.FATAL, "Could not send the message " + message.getHeader() + " to the server.");
     }
 }

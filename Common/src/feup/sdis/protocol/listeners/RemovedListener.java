@@ -15,6 +15,13 @@ import java.util.Observable;
 public class RemovedListener extends ProtocolListener {
 
     /**
+     * Constructor of RemovedListener
+     */
+    public RemovedListener() {
+        this.receivedResponse = true;
+    }
+
+    /**
      * Called when a new message is received
      * @param o object that was being observed
      * @param arg argument of the notification

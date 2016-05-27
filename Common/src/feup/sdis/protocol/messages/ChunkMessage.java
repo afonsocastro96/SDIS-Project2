@@ -1,7 +1,6 @@
 package feup.sdis.protocol.messages;
 
 import feup.sdis.protocol.Protocol;
-import feup.sdis.protocol.listeners.ProtocolListener;
 
 import java.util.UUID;
 

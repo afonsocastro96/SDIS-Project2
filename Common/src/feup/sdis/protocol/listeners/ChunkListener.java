@@ -4,30 +4,55 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.ChunkMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.ChunkParser;
 
 import java.util.Observable;
+import java.util.UUID;
 
 /**
- * Created by Afonso on 26/05/2016.
+ * Chunk listener
  */
 public class ChunkListener extends ProtocolListener{
-    private boolean receivedResponse;
+
+    /**
+     * Host where the Chunk should come
+     */
     private final String host;
+
+    /**
+     * Port where the Chunk should come
+     */
     private final int port;
 
-    public ChunkListener(final String host, final int port){
+    /**
+     * File id of the chunk we are expecting
+     */
+    private final UUID fileId;
+
+    /**
+     * Number of the chunk we are expecting
+     */
+    private final int chunkNo;
+
+    /**
+     * Constructor of ChunkListener
+     * @param host host from where the chunk should come
+     * @param port port from where the chunk should come
+     */
+    public ChunkListener(final String host, final int port, final UUID fileId, final int chunkNo){
         this.receivedResponse = false;
         this.host = host;
         this.port = port;
+        this.fileId = fileId;
+        this.chunkNo = chunkNo;
     }
 
-    public boolean hasReceivedResponse() {
-        return receivedResponse;
-    }
-
+    /**
+     * Called when a new message is received
+     * @param o object that was being observed
+     * @param arg argument of the notification
+     */
     @Override
     public void update(Observable o, Object arg) {
         if(!(o instanceof SSLManager))
@@ -47,8 +72,8 @@ public class ChunkListener extends ProtocolListener{
         final int port = (Integer) objects[1];
         final byte[] message = (byte[]) objects[2];
 
+        // Validate message
         final ProtocolMessage protocolMessage;
-
         try {
             protocolMessage = new ChunkParser().parse(message);
             Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
@@ -58,6 +83,14 @@ public class ChunkListener extends ProtocolListener{
         }
 
 
-
+        // Check if this is the Chunk we are expecting
+        if(!host.equalsIgnoreCase(this.host))
+            return;
+        if(port != this.port)
+            return;
+        if(protocolMessage.getFileId() != fileId)
+            return;
+        if(protocolMessage.getChunkNo() != chunkNo)
+            return;
     }
 }

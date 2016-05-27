@@ -15,6 +15,13 @@ import java.util.Observable;
 public class GetChunkListener extends ProtocolListener {
 
     /**
+     * Constructor of GetChunkListener
+     */
+    public GetChunkListener() {
+        this.receivedResponse = true;
+    }
+
+    /**
      * Called when a new message is received
      * @param o object that was being observed
      * @param arg argument of the notification

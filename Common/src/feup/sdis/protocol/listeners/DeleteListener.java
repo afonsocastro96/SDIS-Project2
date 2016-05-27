@@ -15,6 +15,13 @@ import java.util.Observable;
 public class DeleteListener extends ProtocolListener {
 
     /**
+     * Constructor of DeleteListener
+     */
+    public DeleteListener() {
+        this.receivedResponse = true;
+    }
+
+    /**
      * Called when a new message is received
      * @param o object that was being observed
      * @param arg argument of the notification

@@ -1,7 +1,5 @@
 package feup.sdis;
 
-import java.util.Scanner;
-
 /**
  * Created by Afonso on 22/05/2016.
  */

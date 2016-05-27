@@ -11,7 +11,6 @@ import feup.sdis.protocol.listeners.ProtocolListener;
 import feup.sdis.protocol.messages.OkMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.WhoAmIMessage;
-import feup.sdis.protocol.messages.parsers.StoredParser;
 import feup.sdis.protocol.messages.parsers.WhoAmIParser;
 
 import java.io.IOException;

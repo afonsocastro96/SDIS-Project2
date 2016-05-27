@@ -1,9 +1,8 @@
 package feup.sdis.protocol.messages.parsers;
 
 import feup.sdis.protocol.Protocol;
-import feup.sdis.protocol.listeners.ProtocolListener;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
+import feup.sdis.protocol.messages.ProtocolMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
