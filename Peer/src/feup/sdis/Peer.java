@@ -7,8 +7,14 @@ import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.messages.*;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.SocketException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -69,6 +75,15 @@ public class Peer extends Node implements Observer {
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
+    }
+
+    private void testAes() throws NoSuchAlgorithmException, NoSuchPaddingException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(128);
+
+        SecretKey secretKey = keyGenerator.generateKey();
+
+        Node.getLogger().log(Level.INFO,"" + (secretKey.getEncoded().length * 8));
     }
 
     /**

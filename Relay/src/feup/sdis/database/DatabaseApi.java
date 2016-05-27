@@ -141,10 +141,10 @@ public class DatabaseApi {
      * @param path path of the file
      * @return list with all the chunk ids of that file
      */
-    public static List<Integer> getChunks(final UUID serialNumber, final String path) {
+    public static List<Integer> getFileChunks(final UUID serialNumber, final String path) {
         final UUID uuid = getFileId(serialNumber, path);
 
-        return getChunks(uuid);
+        return getFileChunks(uuid);
     }
 
     /**
@@ -183,7 +183,7 @@ public class DatabaseApi {
      * @return true if is saved, false otherwise
      */
     public static boolean hasChunk(final UUID file, final int chunkNumber) {
-        final String query = "SELECT id FROM chunks WHERE file = ? AND chunk = ?;";
+        final String query = "SELECT id FROM chunks WHERE file = ? AND number = ?;";
         final Object[] params = new Object[]{file.toString(), chunkNumber};
 
         return hasResult(query, params);
@@ -194,11 +194,12 @@ public class DatabaseApi {
      * @param file file id of the chunk to be added
      * @param chunkNumber number of the chunk to add
      * @param minReplicas minimum replicas of the chunk
+     * @param secretKey secret key to encrypt / decrypt the chunk
      * @return true if was added, false otherwise
      */
-    public static boolean addChunk(final UUID file, final int chunkNumber, final int minReplicas) {
-        final String query = "INSERT INTO chunks VALUES (?, ?, ?);";
-        final Object[] params = new Object[]{file.toString(), chunkNumber, minReplicas};
+    public static boolean addChunk(final UUID file, final int chunkNumber, final int minReplicas, final byte[] secretKey) {
+        final String query = "INSERT INTO chunks VALUES (?, ?, ?, ?);";
+        final Object[] params = new Object[]{file.toString(), chunkNumber, minReplicas, secretKey};
 
         return executeUpdate(query, params);
     }
@@ -221,7 +222,7 @@ public class DatabaseApi {
      * @return true if was removed, false otherwise
      */
     public static boolean removeChunk(final UUID file, final int chunkNumber) {
-        final String query = "DELETE FROM chunks WHERE file = ? AND chunk = ?;";
+        final String query = "DELETE FROM chunks WHERE file = ? AND number = ?;";
         final Object[] params = new Object[]{file.toString(), chunkNumber};
 
         return executeUpdate(query, params);
@@ -234,7 +235,7 @@ public class DatabaseApi {
      * @return id of the chunk of that file or -1 in case of an error
      */
     public static int getChunkId(final UUID file, final int chunkNumber) {
-        final String query = "SELECT id FROM chunks WHERE file = ? AND chunk = ?;";
+        final String query = "SELECT id FROM chunks WHERE file = ? AND number = ?;";
         final Object[] params = new Object[]{file.toString(), chunkNumber};
 
         final ResultSet result = executeQuery(query, params);
@@ -252,13 +253,13 @@ public class DatabaseApi {
     }
 
     /**
-     * Get the chunk id of a given file chunk
+     * Get the id of a given file chunk
      * @param file file to get the chunk id
      * @param chunkNumber chunk number to get the id
      * @return id of the chunk of that file or -1 in case of an error
      */
     public static int getMinReplicas(final UUID file, final int chunkNumber) {
-        final String query = "SELECT minReplicas FROM chunks WHERE file = ? AND chunk = ?;";
+        final String query = "SELECT minReplicas FROM chunks WHERE file = ? AND number = ?;";
         final Object[] params = new Object[]{file.toString(), chunkNumber};
 
         final ResultSet result = executeQuery(query, params);
@@ -276,11 +277,35 @@ public class DatabaseApi {
     }
 
     /**
+     * Get the secret key of a given file chunk
+     * @param file file to get the chunk's secret key
+     * @param chunkNumber chunk number to get its secret key
+     * @return secret key of the chunk of that file or null in case of an error
+     */
+    public static byte[] getSecretKey(final UUID file, final int chunkNumber) {
+        final String query = "SELECT secretKey FROM chunks WHERE file = ? AND number = ?;";
+        final Object[] params = new Object[]{file.toString(), chunkNumber};
+
+        final ResultSet result = executeQuery(query, params);
+        if(result == null)
+            return null;
+
+        try {
+            if(!result.next())
+                return null;
+            return result.getBytes("secretKey");
+        } catch (SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Could get the chunk secret key. " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Get a list with the IDs of all the chunks of a file
      * @param file id of the file to get the chunks
-     * @return list with all the chunk ids of that file
+     * @return list with all the chunk ids of that file or null in case of an error
      */
-    public static List<Integer> getChunks(final UUID file) {
+    public static List<Integer> getFileChunks(final UUID file) {
         final String query = "SELECT id FROM chunks WHERE file = ?;";
         final Object[] params = new Object[]{file.toString()};
 
@@ -311,7 +336,7 @@ public class DatabaseApi {
      * @return true if has, false otherwise
      */
     public static boolean hasChunkReplica(final UUID serialNumber, final int chunkId) {
-        final String query = "SELECT peer FROM replicas WHERE peer = ? AND file_chunk = ?;";
+        final String query = "SELECT peer FROM replicas WHERE peer = ? AND chunk = ?;";
         final Object[] params = new Object[]{serialNumber.toString(), chunkId};
 
         return hasResult(query, params);
@@ -337,7 +362,7 @@ public class DatabaseApi {
      * @return true if was removed, false otherwise
      */
     public static boolean removeChunkReplica(final UUID serialNumber, final int chunkId) {
-        final String query = "DELETE FROM replicas WHERE peer = ? AND file_chunk = ?;";
+        final String query = "DELETE FROM replicas WHERE peer = ? AND chunk = ?;";
         final Object[] params = new Object[]{serialNumber.toString(), chunkId};
 
         return executeUpdate(query, params);
@@ -349,7 +374,7 @@ public class DatabaseApi {
      * @return number of replicas of the chunk or -1 in case of error
      */
     public static int getChunkReplicationDegree(final int chunkId) {
-        final String query = "SELECT COUNT(file_chunk) AS replicationDegree FROM replicas WHERE file_chunk = ?;";
+        final String query = "SELECT COUNT(chunk) AS replicationDegree FROM replicas WHERE chunk = ?;";
         final Object[] params = new Object[]{chunkId};
 
         final ResultSet result = executeQuery(query, params);
@@ -372,7 +397,7 @@ public class DatabaseApi {
      * @return peers with that chunk or null in case of error
      */
     public static List<UUID> getChunkPeers(final int chunkId) {
-        final String query = "SELECT peer FROM replicas WHERE file_chunk = ?;";
+        final String query = "SELECT peer FROM replicas WHERE chunk = ?;";
         final Object[] params = new Object[]{chunkId};
 
         final ResultSet result = executeQuery(query, params);
@@ -397,7 +422,7 @@ public class DatabaseApi {
      * @return list with all replicas of the peer
      */
     public List<Integer> getPeerReplicas(final UUID serialNumber) {
-        final String query = "SELECT file_chunk FROM replicas WHERE peer = ?;";
+        final String query = "SELECT chunk FROM replicas WHERE peer = ?;";
         final Object[] params = new Object[]{serialNumber.toString()};
 
         final ResultSet result = executeQuery(query, params);
