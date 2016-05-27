@@ -13,8 +13,6 @@ import java.io.IOException;
  */
 public abstract class ProtocolInitiator implements Runnable {
 
-    int MAXCHUNKSIZE = 64000;
-
     /**
      * Maximum attempts to send the message
      */
@@ -113,13 +111,21 @@ public abstract class ProtocolInitiator implements Runnable {
     }
 
     /**
+     * Check if the initiator has received the expected response
+     * @return true if received, false otherwise
+     */
+    public boolean hasReceivedResponse() {
+        return listener.hasReceivedResponse();
+    }
+
+    /**
      * Runnable of ProtocolInitiator
      */
     @Override
     public void run() {
         Peer.getInstance().getMonitor().addObserver(listener);
 
-        while(!listener.hasReceivedResponse()){
+        while(!hasReceivedResponse()){
             if(getAttempts() >= MAX_ATTEMPTS)
                 break;
 
@@ -139,9 +145,9 @@ public abstract class ProtocolInitiator implements Runnable {
 
         Peer.getInstance().getMonitor().deleteObserver(listener);
 
-        if(listener.hasReceivedResponse())
+        if(hasReceivedResponse())
             Node.getLogger().log(Level.DEBUG, "Server received the message " + message.getHeader());
         else
-            Node.getLogger().log(Level.FATAL, "Could not send the message " + message.getHeader() + " to the server.");
+            Node.getLogger().log(Level.ERROR, "Could not send the message " + message.getHeader() + " to the server.");
     }
 }

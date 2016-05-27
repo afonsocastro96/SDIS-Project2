@@ -40,6 +40,6 @@ public class ChunkInitiator extends ProtocolInitiator {
         if(sendMessage(message))
             Node.getLogger().log(Level.DEBUG, "Server received the message " + message.getHeader());
         else
-            Node.getLogger().log(Level.FATAL, "Could not send the message " + message.getHeader() + " to the server.");
+            Node.getLogger().log(Level.ERROR, "Could not send the message " + message.getHeader() + " to the server.");
     }
 }
