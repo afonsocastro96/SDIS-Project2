@@ -24,26 +24,36 @@ public class FileNameInitiator extends ProtocolInitiator {
     public void run() {
         final FileNameMessage message = new FileNameMessage(Peer.getInstance().getId(), fileName);
 
-        try {
-            Peer.getInstance().getMonitor().write(message.getBytes());
-        } catch (IOException e) {
-            Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
-            return;
-        }
-
         final OkListener listener = new OkListener(
                 Peer.getInstance().getMonitor().getChannel().getHost(),
                 Peer.getInstance().getMonitor().getChannel().getPort(),
                 message.getHeader());
+
         Peer.getInstance().getMonitor().addObserver(listener);
 
         while(!listener.hasReceivedResponse()){
-            try{
+            if(getAttempts() >= MAX_ATTEMPTS)
+                break;
+
+            if(getRounds() == 0){
+                sendMessage(message);
+                increaseAttempts();
+            }
+
+            increaseRounds();
+            if(getRounds() >= MAX_ROUNDS)
+                resetRounds();
+
+            try {
                 Thread.sleep(1000);
-            } catch(InterruptedException ignored){}
+            } catch (InterruptedException ignored) {}
         }
 
         Peer.getInstance().getMonitor().deleteObserver(listener);
-        Node.getLogger().log(Level.INFO, "Server has received the file's name");
+
+        if(listener.hasReceivedResponse())
+            Node.getLogger().log(Level.DEBUG, "Server has received the chunk");
+        else
+            Node.getLogger().log(Level.FATAL, "Could not send the chunk to the server.");
     }
 }

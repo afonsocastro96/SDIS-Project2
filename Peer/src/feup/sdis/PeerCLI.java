@@ -23,35 +23,41 @@ public class PeerCLI {
         switch(command){
             case "backup":
             case "bck":
+            case "b":
                 if(args.length != 3)
                     System.out.println("USAGE: backup <file> <repDegree>");
                 else {}
                 break;
             case "delete":
             case "dlt":
+            case "d":
                 if(args.length != 2)
                     System.out.println("USAGE: remove <file>");
                 else {}
                 break;
             case "restore":
             case "rst":
+            case "r":
                 if(args.length != 2)
                     System.out.println("USAGE: restore <file>");
                 else {}
                 break;
-            case "recover":
-            case "rcv":
+            case "start":
+            case "str":
+            case "s":
                 if(args.length != 1)
-                    System.out.println("USAGE: recover");
+                    System.out.println("USAGE: start");
                 else {}
                 break;
-            case "validation":
-            case "vld":
+            case "verification":
+            case "vrf":
+            case "v":
                 if(args.length != 1)
-                    System.out.println("USAGE: validation");
+                    System.out.println("USAGE: verification");
                 else {}
                 break;
             case "exit":
+            case "ext":
             case "e":
                 exit = true;
                 break;

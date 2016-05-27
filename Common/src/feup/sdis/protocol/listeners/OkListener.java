@@ -3,7 +3,6 @@ package feup.sdis.protocol.listeners;
 import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
-import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.OkMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;

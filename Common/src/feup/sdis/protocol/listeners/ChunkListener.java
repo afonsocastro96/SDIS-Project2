@@ -4,21 +4,30 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
+import feup.sdis.protocol.messages.ChunkMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
-import feup.sdis.protocol.messages.parsers.FileNameParser;
+import feup.sdis.protocol.messages.parsers.ChunkParser;
 
 import java.util.Observable;
 
 /**
- * File name listener
+ * Created by Afonso on 26/05/2016.
  */
-public class FileNameListener extends ProtocolListener {
+public class ChunkListener extends ProtocolListener{
+    private boolean receivedResponse;
+    private final String host;
+    private final int port;
 
-    /**
-     * Called when a new message is received
-     * @param o object that was being observed
-     * @param arg argument of the notification
-     */
+    public ChunkListener(final String host, final int port){
+        this.receivedResponse = false;
+        this.host = host;
+        this.port = port;
+    }
+
+    public boolean hasReceivedResponse() {
+        return receivedResponse;
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         if(!(o instanceof SSLManager))
@@ -26,7 +35,6 @@ public class FileNameListener extends ProtocolListener {
         if(!(arg instanceof Object[]))
             return;
 
-        // Validate data type of the objects
         final Object[] objects = (Object[]) arg;
         if(!(objects[0] instanceof String))
             return;
@@ -40,12 +48,16 @@ public class FileNameListener extends ProtocolListener {
         final byte[] message = (byte[]) objects[2];
 
         final ProtocolMessage protocolMessage;
-        try{
-            protocolMessage = new FileNameParser().parse(message);
+
+        try {
+            protocolMessage = new ChunkParser().parse(message);
             Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
-        } catch (MalformedMessageException e){
-            Node.getLogger().log(Level.DEBUG, "Failed to parse FILENAME message. " + e.getMessage());
+        } catch (MalformedMessageException e) {
+            Node.getLogger().log(Level.DEBUG, "Failed to parse CHUNK message. " + e.getMessage());
             return;
         }
+
+
+
     }
 }

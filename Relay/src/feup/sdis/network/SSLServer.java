@@ -1,6 +1,7 @@
 package feup.sdis.network;
 
 import feup.sdis.Node;
+import feup.sdis.listeners.FileNameListener;
 import feup.sdis.listeners.WhoAmIListener;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.listeners.*;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
