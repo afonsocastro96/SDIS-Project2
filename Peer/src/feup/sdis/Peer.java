@@ -77,15 +77,6 @@ public class Peer extends Node implements Observer {
         getLogger().log(Level.INFO, "Service started.");
     }
 
-    private void testAes() throws NoSuchAlgorithmException, NoSuchPaddingException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        keyGenerator.init(128);
-
-        SecretKey secretKey = keyGenerator.generateKey();
-
-        Node.getLogger().log(Level.INFO,"" + (secretKey.getEncoded().length * 8));
-    }
-
     /**
      * Get the instance of the peer
      *

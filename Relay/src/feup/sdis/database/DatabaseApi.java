@@ -432,7 +432,7 @@ public class DatabaseApi {
         try {
             final List<Integer> chunks = new ArrayList<>();
             while(result.next())
-                chunks.add(result.getInt("file_chunk"));
+                chunks.add(result.getInt("number"));
 
             return chunks;
         } catch (SQLException e) {
