@@ -48,33 +48,11 @@ public class Peer extends Node implements Observer {
     public static void main(String[] args) {
         // ID of the peer
         final UUID id = getSerialNumber();
-        if(id == null)
+        if (id == null)
             return;
 
         instance = new Peer(id);
-
-        // Starting the peer
-        getLogger().log(Level.INFO, "Starting the service of " + getInstance().getId());
-
-        if(!getInstance().createConfig())
-            return;
-        if(!getInstance().loadConfig())
-            return;
-        getInstance().getMonitor().addObserver(getInstance());
-        getInstance().getMonitor().start();
-
-        // Send our UUID
-        while(!getInstance().getMonitor().isRunning()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
-        }
-        final WhoAmIInitiator initiator = new WhoAmIInitiator();
-        new Thread(initiator).start();
-
-        // Start the server
-        getLogger().log(Level.INFO, "Service started.");
+        instance.start();
     }
 
     /**
@@ -102,7 +80,42 @@ public class Peer extends Node implements Observer {
     }
 
     /**
+     * Start the peer
+     */
+    public void start() {
+        // Starting the peer
+        getLogger().log(Level.INFO, "Starting peer " + getInstance().getId());
+
+        if (!getInstance().createConfig())
+            return;
+        if (!getInstance().loadConfig())
+            return;
+        getInstance().getMonitor().addObserver(getInstance());
+        getInstance().getMonitor().start();
+
+        // Send our UUID
+        while (!getInstance().getMonitor().isRunning()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
+        final WhoAmIInitiator initiator = new WhoAmIInitiator();
+        final Thread whoAmIThread = new Thread(initiator);
+        whoAmIThread.start();
+        while (whoAmIThread.isAlive())
+            try {
+                whoAmIThread.join();
+            } catch (InterruptedException e) {
+            }
+
+        // Start the server
+        getLogger().log(Level.INFO, "Service started.");
+    }
+
+    /**
      * Get the ID of the peer
+     *
      * @return id of the peer
      */
     public UUID getId() {
@@ -111,6 +124,7 @@ public class Peer extends Node implements Observer {
 
     /**
      * Get the secure channel monitor of the peer
+     *
      * @return secure channel monitor of the peer
      */
     public SSLManager getMonitor() {
@@ -125,13 +139,13 @@ public class Peer extends Node implements Observer {
     @Override
     boolean createConfig() {
         File configFile = new File(CONFIG_FILE);
-        if(configFile.exists()) return true;
+        if (configFile.exists()) return true;
 
         Properties properties = new Properties();
         OutputStream output = null;
 
         try {
-            if(!configFile.createNewFile()) {
+            if (!configFile.createNewFile()) {
                 getLogger().log(Level.FATAL, "Could not create the configuration file.");
                 return false;
             }
@@ -219,26 +233,27 @@ public class Peer extends Node implements Observer {
 
     /**
      * Update method to receive updates when a SSLManager changes its status
-     * @param o observable that called the function
+     *
+     * @param o   observable that called the function
      * @param arg arguments of the function
      */
     @Override
     public void update(Observable o, Object arg) {
-        if(!(o instanceof SSLManager))
+        if (!(o instanceof SSLManager))
             return;
 
         final SSLManager monitor = (SSLManager) o;
 
         final Object[] objects = (Object[]) arg;
-        if(!(objects[0] instanceof String))
+        if (!(objects[0] instanceof String))
             return;
-        if(!(objects[1] instanceof Integer))
+        if (!(objects[1] instanceof Integer))
             return;
 
-        if(objects[2] instanceof EOFException) {
+        if (objects[2] instanceof EOFException) {
             Node.getLogger().log(Level.INFO, monitor.getChannel().getHost() + ":" + monitor.getChannel().getPort() + " has disconnected.");
-        } else if(objects[2] instanceof SocketException) {
-        } else if(objects[2] instanceof IOException) {
+        } else if (objects[2] instanceof SocketException) {
+        } else if (objects[2] instanceof IOException) {
             Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + ".");
         } else {
             return;
