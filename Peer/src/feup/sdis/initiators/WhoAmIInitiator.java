@@ -16,16 +16,21 @@ import java.io.IOException;
 public class WhoAmIInitiator extends ProtocolInitiator {
 
     /**
+     * Constructor of WhoAmIInitiator
+     */
+    public WhoAmIInitiator() {
+        message = new WhoAmIMessage(Peer.getInstance().getId());
+        listener = new OkListener(
+                Peer.getInstance().getMonitor().getChannel().getHost(),
+                Peer.getInstance().getMonitor().getChannel().getPort(),
+                message.getHeader());
+    }
+
+    /**
      * Send the UUID of the peer to the server
      */
     @Override
     public void run() {
-        final WhoAmIMessage message = new WhoAmIMessage(Peer.getInstance().getId());
-        final OkListener listener = new OkListener(
-                Peer.getInstance().getMonitor().getChannel().getHost(),
-                Peer.getInstance().getMonitor().getChannel().getPort(),
-                message.getHeader());
-
         Peer.getInstance().getMonitor().addObserver(listener);
 
         while(!listener.hasReceivedResponse()) {

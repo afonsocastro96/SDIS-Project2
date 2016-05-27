@@ -3,6 +3,7 @@ package feup.sdis.initiators;
 import feup.sdis.Node;
 import feup.sdis.Peer;
 import feup.sdis.logger.Level;
+import feup.sdis.protocol.listeners.OkListener;
 import feup.sdis.protocol.messages.ProtocolMessage;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.io.IOException;
  * Protocol Listener
  */
 public abstract class ProtocolInitiator implements Runnable {
+
+    int MAXCHUNKSIZE = 64000;
 
     /**
      * Maximum attempts to send the message
@@ -21,6 +24,16 @@ public abstract class ProtocolInitiator implements Runnable {
      * Maximum rounds before attempting to resend the message
      */
     protected final int MAX_ROUNDS = 5;
+
+    /**
+     * Message of the protocol
+     */
+    protected ProtocolMessage message;
+
+    /**
+     * Listener for the reception of the message
+     */
+    protected OkListener listener;
 
     /**
      * Number of attempts to send the message
