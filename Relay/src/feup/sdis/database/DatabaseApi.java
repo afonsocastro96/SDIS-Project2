@@ -259,7 +259,7 @@ public class DatabaseApi {
      * @return id of the chunk of that file or -1 in case of an error
      */
     public static int getMinReplicas(final UUID file, final int chunkNumber) {
-        final String query = "SELECT minReplicas FROM chunks WHERE file = ? AND number = ?;";
+        final String query = "SELECT min_replicas FROM chunks WHERE file = ? AND number = ?;";
         final Object[] params = new Object[]{file.toString(), chunkNumber};
 
         final ResultSet result = executeQuery(query, params);
@@ -269,7 +269,7 @@ public class DatabaseApi {
         try {
             if(!result.next())
                 return -1;
-            return result.getInt("minReplicas");
+            return result.getInt("min_replicas");
         } catch (SQLException e) {
             Node.getLogger().log(Level.ERROR, "Could get the minimum replicas of a chunk. " + e.getMessage());
             return -1;
@@ -283,7 +283,7 @@ public class DatabaseApi {
      * @return secret key of the chunk of that file or null in case of an error
      */
     public static byte[] getSecretKey(final UUID file, final int chunkNumber) {
-        final String query = "SELECT secretKey FROM chunks WHERE file = ? AND number = ?;";
+        final String query = "SELECT secret_key FROM chunks WHERE file = ? AND number = ?;";
         final Object[] params = new Object[]{file.toString(), chunkNumber};
 
         final ResultSet result = executeQuery(query, params);
@@ -293,7 +293,7 @@ public class DatabaseApi {
         try {
             if(!result.next())
                 return null;
-            return result.getBytes("secretKey");
+            return result.getBytes("secret_key");
         } catch (SQLException e) {
             Node.getLogger().log(Level.ERROR, "Could get the chunk secret key. " + e.getMessage());
             return null;
