@@ -58,7 +58,7 @@ public abstract class ProtocolMessage {
          */
         WHOAMI,
 
-        /**
+        RESTORE, CHUNKTOTAL, /**
          * HASCHUNK message type
          */
         HASCHUNK

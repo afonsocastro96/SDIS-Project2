@@ -24,7 +24,7 @@ public class BackupCommand implements Command {
      * @param f file to be backed up
      * @return true if file was backed up successfully, false otherwise
      */
-    public boolean execute(final File f, final int minReplicas) {
+    public static boolean execute(final File f, final int minReplicas) {
         // Send file name
         final FileNameInitiator fileNameInitiator = new FileNameInitiator(UUID.randomUUID(), f.getAbsolutePath());
         final Thread fileNameThread = new Thread(fileNameInitiator);
@@ -32,8 +32,7 @@ public class BackupCommand implements Command {
         while (fileNameThread.isAlive())
             try {
                 fileNameThread.join();
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException ignored) {}
         if (!fileNameInitiator.hasReceivedResponse())
             return false;
 
@@ -65,8 +64,7 @@ public class BackupCommand implements Command {
                 while (putChunkThread.isAlive())
                     try {
                         putChunkThread.join();
-                    } catch (InterruptedException ignored) {
-                    }
+                    } catch (InterruptedException ignored) {}
                 if (!putChunkInitiator.hasReceivedResponse())
                     return false;
             } catch (IOException e) {

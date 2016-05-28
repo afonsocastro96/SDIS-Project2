@@ -1,5 +1,10 @@
 package feup.sdis;
 
+import feup.sdis.commands.BackupCommand;
+import feup.sdis.commands.RestoreCommand;
+
+import java.io.File;
+
 /**
  * Created by Afonso on 22/05/2016.
  */
@@ -24,7 +29,8 @@ public class PeerCLI {
             case "b":
                 if(args.length != 3)
                     System.out.println("USAGE: backup <file> <repDegree>");
-                else {}
+                else
+                    BackupCommand.execute(new File(args[1]), Integer.parseInt(args[2]));
                 break;
             case "delete":
             case "dlt":
@@ -38,7 +44,8 @@ public class PeerCLI {
             case "r":
                 if(args.length != 2)
                     System.out.println("USAGE: restore <file>");
-                else {}
+                else
+                    RestoreCommand.execute(new File(args[1]));
                 break;
             case "start":
             case "str":

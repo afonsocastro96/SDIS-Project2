@@ -1,11 +1,15 @@
 package feup.sdis.protocol.listeners;
 
+import feup.sdis.protocol.messages.ProtocolMessage;
+
 import java.util.Observer;
 
 /**
  * Protocol Listener
  */
 public abstract class ProtocolListener implements Observer {
+
+    protected ProtocolMessage protocolMessage;
 
     /**
      * Flag to check if we have already received the expected response
@@ -18,5 +22,13 @@ public abstract class ProtocolListener implements Observer {
      */
     public boolean hasReceivedResponse() {
         return receivedResponse;
+    }
+
+    /**
+     * Returns the message retrieved from the listener.
+     * @return The message.
+     */
+    public ProtocolMessage getMessage(){
+        return protocolMessage;
     }
 }

@@ -150,4 +150,10 @@ public abstract class ProtocolInitiator implements Runnable {
         else
             Node.getLogger().log(Level.ERROR, "Could not send the message " + message.getHeader() + " to the server.");
     }
+
+    public ProtocolMessage getResponse(){
+        if(!listener.hasReceivedResponse())
+            return null;
+        return listener.getMessage();
+    }
 }

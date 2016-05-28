@@ -1,26 +1,19 @@
-package feup.sdis.protocol.listeners;
+package feup.sdis.listeners;
 
 import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
+import feup.sdis.protocol.listeners.ProtocolListener;
 import feup.sdis.protocol.messages.ProtocolMessage;
-import feup.sdis.protocol.messages.parsers.HasChunkParser;
+import feup.sdis.protocol.messages.parsers.RestoreParser;
 
 import java.util.Observable;
 
 /**
- * Has chunk listener
+ * Created by Afonso on 27/05/2016.
  */
-public class HasChunkListener extends ProtocolListener {
-
-    /**
-     * Constructor of HasChunkListener
-     */
-    public HasChunkListener() {
-        this.receivedResponse = true;
-    }
-
+public class RestoreListener extends ProtocolListener{
     /**
      * Called when a new message is received
      * @param o object that was being observed
@@ -46,12 +39,12 @@ public class HasChunkListener extends ProtocolListener {
         final int port = (Integer) objects[1];
         final byte[] message = (byte[]) objects[2];
 
-        // Validate message
-        try {
-            protocolMessage = new HasChunkParser().parse(message);
+        final ProtocolMessage protocolMessage;
+        try{
+            protocolMessage = new RestoreParser().parse(message);
             Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
-        } catch (MalformedMessageException e) {
-            Node.getLogger().log(Level.DEBUG, "Failed to parse HASCHUNK message. " + e.getMessage());
+        } catch (MalformedMessageException e){
+            Node.getLogger().log(Level.DEBUG, "Failed to parse RESTORE message. " + e.getMessage());
             return;
         }
     }

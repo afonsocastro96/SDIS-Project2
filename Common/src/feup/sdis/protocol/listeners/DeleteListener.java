@@ -47,7 +47,6 @@ public class DeleteListener extends ProtocolListener {
         final byte[] message = (byte[]) objects[2];
 
         // Validate message
-        final ProtocolMessage protocolMessage;
         try {
             protocolMessage = new DeleteParser().parse(message);
         } catch (MalformedMessageException e) {

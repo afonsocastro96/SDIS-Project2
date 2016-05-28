@@ -47,7 +47,6 @@ public class GetChunkListener extends ProtocolListener {
         final byte[] message = (byte[]) objects[2];
 
         // Validate message
-        final ProtocolMessage protocolMessage;
         try {
             protocolMessage = new GetChunkParser().parse(message);
         } catch (MalformedMessageException e) {
