@@ -22,10 +22,10 @@ public class StoredParser extends ProtocolParser {
         splitMessage(message);
 
         if (header.size() != 4)
-            throw new MalformedMessageException("Wrong number of arguments for the STOREDTOTAL message: 4 arguments must be present");
+            throw new MalformedMessageException("Wrong number of arguments for the STORED message: 4 arguments must be present");
 
         /* Validate protocol */
-        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.STOREDTOTAL.toString()))
+        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.STORED.toString()))
             throw new MalformedMessageException("Wrong protocol");
 
         /* Validate version */

@@ -41,7 +41,7 @@ public class PutChunkInitiator extends ProtocolInitiator {
         this.chunkNo = chunkNo;
         this.body = body;
 
-        message = new PutChunkMessage(fileId, chunkNo, -1, body);
+        message = new PutChunkMessage(fileId, chunkNo, 1, body);
         listener = new StoredListener(
                 monitor.getChannel().getHost(),
                 monitor.getChannel().getPort(),

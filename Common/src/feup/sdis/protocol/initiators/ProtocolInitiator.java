@@ -161,9 +161,9 @@ public abstract class ProtocolInitiator implements Runnable {
         monitor.deleteObserver(listener);
 
         if(hasReceivedResponse())
-            Node.getLogger().log(Level.DEBUG, "Server received the message " + message.getHeader());
+            Node.getLogger().log(Level.DEBUG, "Target received the message " + message.getHeader());
         else
-            Node.getLogger().log(Level.ERROR, "Could not send the message " + message.getHeader() + " to the server.");
+            Node.getLogger().log(Level.ERROR, "Could not send the message " + message.getHeader() + " to the target.");
     }
 
     /**
