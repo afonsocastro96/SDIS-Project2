@@ -21,6 +21,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -125,11 +126,10 @@ public class GetChunkListener extends ProtocolListener {
         final byte[] decryptedBody;
         try {
             decryptedBody = Security.decrypt(Protocol.ENCRYPT_ALGORITHM, secretKey, protocolInitiator.getResponse().getBody());
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             Node.getLogger().log(Level.FATAL, "Could not decrypt the body. " + e.getMessage());
             return;
         }
-        Node.getLogger().log(Level.DEBUG, "Size of encrypted: " + protocolInitiator.getResponse().getBody().length + " | Decrypted: " + decryptedBody.length);
 
         // Send response to the sender
         try {

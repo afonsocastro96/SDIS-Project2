@@ -19,8 +19,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Set;
 import java.util.UUID;
@@ -99,7 +101,7 @@ public class PutChunkListener extends ProtocolListener {
         try {
             key = Security.generateSecretKey(Protocol.ENCRYPT_ALGORITHM);
             encryptedBody = Security.encrypt(Protocol.ENCRYPT_ALGORITHM, key, body);
-        } catch (NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException e) {
+        } catch (NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException | InvalidAlgorithmParameterException e) {
             Node.getLogger().log(Level.FATAL, "Could not encrypt the body. " + e.getMessage());
             return;
         }

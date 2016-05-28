@@ -80,7 +80,7 @@ public class GetChunkListener extends ProtocolListener {
             return;
 
         // Read the chunk
-        final byte[] buffer = new byte[Protocol.CHUNK_SIZE];
+        final byte[] buffer = new byte[Protocol.CHUNK_SIZE * 2];
         final int size;
         try {
             final FileInputStream fileInputStream = new FileInputStream(chunkFile);
