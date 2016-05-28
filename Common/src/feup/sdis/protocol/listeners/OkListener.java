@@ -5,7 +5,6 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.OkParser;
 
 import java.util.Observable;

@@ -70,6 +70,8 @@ public class FileNameListener extends ProtocolListener {
             return;
 
         // Save in the database
+        if(DatabaseApi.hasFile(peer, fileName))
+            return;
         if(!DatabaseApi.addFile(fileId, peer, fileName))
             return;
 

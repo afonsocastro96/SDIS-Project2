@@ -16,12 +16,12 @@ public abstract class ProtocolInitiator implements Runnable {
     /**
      * Maximum attempts to send the message
      */
-    protected final int MAX_ATTEMPTS = 3;
+    protected int MAX_ATTEMPTS = 3;
 
     /**
      * Maximum rounds before attempting to resend the message
      */
-    protected final int MAX_ROUNDS = 5;
+    protected int MAX_ROUNDS = 5;
 
     /**
      * Monitor of this initiator
@@ -100,6 +100,14 @@ public abstract class ProtocolInitiator implements Runnable {
      */
     public void increaseRounds() {
         ++rounds;
+    }
+
+    /**
+     * Set maximum rounds before retrying to send the message
+     * @param maxRounds maximum rounds before next attempt
+     */
+    public void setMaxRounds(final int maxRounds) {
+        MAX_ROUNDS = maxRounds;
     }
 
     /**

@@ -2,10 +2,10 @@ package feup.sdis.commands;
 
 import feup.sdis.Node;
 import feup.sdis.Peer;
-import feup.sdis.protocol.initiators.GetChunkInitiator;
-import feup.sdis.protocol.initiators.RestoreInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.Protocol;
+import feup.sdis.protocol.initiators.GetChunkInitiator;
+import feup.sdis.protocol.initiators.RestoreInitiator;
 import feup.sdis.protocol.messages.ProtocolMessage;
 
 import java.io.File;

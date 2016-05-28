@@ -2,10 +2,10 @@ package feup.sdis.commands;
 
 import feup.sdis.Node;
 import feup.sdis.Peer;
-import feup.sdis.protocol.initiators.FileNameInitiator;
-import feup.sdis.protocol.initiators.PutChunkInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.Protocol;
+import feup.sdis.protocol.initiators.FileNameInitiator;
+import feup.sdis.protocol.initiators.PutChunkInitiator;
 import feup.sdis.protocol.messages.StoredTotalMessage;
 
 import java.io.File;
@@ -62,6 +62,7 @@ public class BackupCommand implements Command {
 
                 // Send the chunk
                 putChunkInitiator = new PutChunkInitiator(Peer.getInstance().getMonitor(), fileNameInitiator.getFileId(), chunkNo, minReplicas, Arrays.copyOf(buffer, size));
+                putChunkInitiator.setMaxRounds(minReplicas * 3 * 2); // Wait at least 3 seconds for each peer
                 putChunkThread = new Thread(putChunkInitiator);
                 putChunkThread.start();
                 while (putChunkThread.isAlive())
@@ -71,7 +72,7 @@ public class BackupCommand implements Command {
                 if (!putChunkInitiator.hasReceivedResponse())
                     return false;
 
-                replicationDegree = ((StoredTotalMessage)putChunkInitiator.getResponse()).getReplicas();
+                replicationDegree = ((StoredTotalMessage) putChunkInitiator.getResponse()).getReplicas();
                 if(replicationDegree == 0)
                     Node.getLogger().log(Level.ERROR, "Could not backup the chunk number " + chunkNo + ".");
                 else if(replicationDegree < minReplicas)

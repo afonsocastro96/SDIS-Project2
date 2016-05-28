@@ -184,7 +184,7 @@ public abstract class ProtocolMessage {
         this.body = body;
     }
 
-    /**c
+    /**
      * Get the header of the message
      * @return header of the message
      */

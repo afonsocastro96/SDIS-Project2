@@ -1,9 +1,6 @@
 package feup.sdis.network;
 
 import feup.sdis.Node;
-import feup.sdis.protocol.listeners.FileNameListener;
-import feup.sdis.protocol.listeners.PutChunkListener;
-import feup.sdis.protocol.listeners.WhoAmIListener;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.listeners.*;
 

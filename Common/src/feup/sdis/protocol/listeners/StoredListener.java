@@ -4,8 +4,6 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.StoredParser;
 
 import java.util.Observable;
@@ -79,6 +77,7 @@ public class StoredListener extends ProtocolListener {
         // Validate message
         try {
             protocolMessage = new StoredParser().parse(message);
+            Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
         } catch (MalformedMessageException e) {
             Node.getLogger().log(Level.DEBUG, "Failed to parse STORED message. " + e.getMessage());
             return;

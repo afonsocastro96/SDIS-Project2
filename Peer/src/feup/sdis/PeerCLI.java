@@ -32,7 +32,8 @@ public class PeerCLI {
                 if(args.length != 3)
                     System.out.println("USAGE: backup <file> <repDegree>");
                 else
-                    BackupCommand.execute(new File(args[1]), Integer.parseInt(args[2]));
+                    if(!BackupCommand.execute(new File(args[1]), Integer.parseInt(args[2])))
+                        System.out.println("Could not backup the file...");
                 break;
             case "delete":
             case "dlt":

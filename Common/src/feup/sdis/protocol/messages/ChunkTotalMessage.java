@@ -2,7 +2,6 @@ package feup.sdis.protocol.messages;
 
 import feup.sdis.protocol.Protocol;
 
-import java.util.StringJoiner;
 import java.util.UUID;
 
 /**

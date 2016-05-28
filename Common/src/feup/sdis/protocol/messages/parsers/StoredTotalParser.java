@@ -1,7 +1,6 @@
 package feup.sdis.protocol.messages.parsers;
 
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.ChunkTotalMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.StoredTotalMessage;
 
@@ -22,8 +21,8 @@ public class StoredTotalParser extends ProtocolParser {
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);
 
-        if(header.size() != 3)
-            throw new MalformedMessageException("Wrong number of arguments for the STOREDTOTAL message: 3 arguments must be present");
+        if(header.size() != 5)
+            throw new MalformedMessageException("Wrong number of arguments for the STOREDTOTAL message: 5 arguments must be present");
 
         /* Validate protocol */
         if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.STOREDTOTAL.toString()))

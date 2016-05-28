@@ -4,7 +4,6 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.DeleteParser;
 
 import java.util.Observable;
@@ -49,6 +48,7 @@ public class DeleteListener extends ProtocolListener {
         // Validate message
         try {
             protocolMessage = new DeleteParser().parse(message);
+            Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
         } catch (MalformedMessageException e) {
             Node.getLogger().log(Level.DEBUG, "Failed to parse DELETE message. " + e.getMessage());
             return;

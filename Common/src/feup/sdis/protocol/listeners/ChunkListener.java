@@ -4,7 +4,6 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.ChunkParser;
 
 import java.util.Observable;

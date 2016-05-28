@@ -4,7 +4,7 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.parsers.StoredParser;
+import feup.sdis.protocol.messages.parsers.StoredTotalParser;
 
 import java.util.Observable;
 import java.util.UUID;
@@ -76,7 +76,8 @@ public class StoredTotalListener extends ProtocolListener {
 
         // Validate message
         try {
-            protocolMessage = new StoredParser().parse(message);
+            protocolMessage = new StoredTotalParser().parse(message);
+            Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
         } catch (MalformedMessageException e) {
             Node.getLogger().log(Level.DEBUG, "Failed to parse STOREDTOTAL message. " + e.getMessage());
             return;
@@ -87,7 +88,7 @@ public class StoredTotalListener extends ProtocolListener {
             return;
         if(port != this.port)
             return;
-        if(protocolMessage.getFileId() != fileId)
+        if(!protocolMessage.getFileId().equals(fileId))
             return;
         if(protocolMessage.getChunkNo() != chunkNo)
             return;

@@ -80,7 +80,7 @@ public class DatabaseApi {
      */
     public static boolean hasFile(final UUID serialNumber, final UUID fileId) {
         final String query = "SELECT uuid FROM files WHERE peer = ? AND uuid = ?;";
-        final Object[] params = new Object[]{serialNumber.toString(), fileId};
+        final Object[] params = new Object[]{serialNumber.toString(), fileId.toString()};
 
         return hasResult(query, params);
     }
@@ -211,7 +211,7 @@ public class DatabaseApi {
      * @return true if was added, false otherwise
      */
     public static boolean addChunk(final UUID file, final int chunkNumber, final int minReplicas, final byte[] secretKey) {
-        final String query = "INSERT INTO chunks VALUES (?, ?, ?, ?);";
+        final String query = "INSERT INTO chunks(file, number, min_replicas, secret_key) VALUES (?, ?, ?, ?);";
         final Object[] params = new Object[]{file.toString(), chunkNumber, minReplicas, secretKey};
 
         return executeUpdate(query, params);

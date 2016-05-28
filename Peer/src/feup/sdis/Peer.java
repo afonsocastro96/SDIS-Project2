@@ -1,9 +1,9 @@
 package feup.sdis;
 
-import feup.sdis.protocol.initiators.WhoAmIInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
+import feup.sdis.protocol.initiators.WhoAmIInitiator;
 
 import java.io.*;
 import java.net.SocketException;

@@ -4,7 +4,6 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.ChunkTotalParser;
 
 import java.util.Observable;
@@ -42,6 +41,7 @@ public class ChunkTotalListener extends ProtocolListener {
         // Validate message
         try {
             protocolMessage = new ChunkTotalParser().parse(message);
+            Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
         } catch (MalformedMessageException e) {
             Node.getLogger().log(Level.DEBUG, "Failed to parse CHUNKTOTAL message. " + e.getMessage());
             return;

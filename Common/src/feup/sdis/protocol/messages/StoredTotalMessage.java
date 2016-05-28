@@ -2,6 +2,7 @@ package feup.sdis.protocol.messages;
 
 import feup.sdis.protocol.Protocol;
 
+import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
@@ -21,7 +22,7 @@ public class StoredTotalMessage extends ProtocolMessage {
      * @param replicas replicas of this chunk
      */
     public StoredTotalMessage(final UUID fileId, final int chunkNo, final int replicas) {
-        super(Type.CHUNKTOTAL, Protocol.VERSION, fileId, chunkNo);
+        super(Type.STOREDTOTAL, Protocol.VERSION, fileId, chunkNo);
         this.replicas = replicas;
     }
 
@@ -31,6 +32,21 @@ public class StoredTotalMessage extends ProtocolMessage {
      */
     public int getReplicas() {
         return replicas;
+    }
+
+    /**c
+     * Get the header of the message
+     * @return header of the message
+     */
+    public String getHeader() {
+        StringJoiner sj = new StringJoiner(" ");
+        sj.add(getMessageType().toString())
+                .add("" + getVersion())
+                .add("" + (getFileId() != null ? getFileId() : ""))
+                .add("" + (getChunkNo() >= 0 ? getChunkNo() : ""))
+                .add("" + (getReplicas() >= 0 ? getReplicas() : ""));
+
+        return sj.toString();
     }
 }
 

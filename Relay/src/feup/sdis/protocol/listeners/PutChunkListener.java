@@ -9,8 +9,6 @@ import feup.sdis.network.SSLServer;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.initiators.ProtocolInitiator;
 import feup.sdis.protocol.initiators.PutChunkInitiator;
-import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.PutChunkMessage;
 import feup.sdis.protocol.messages.StoredTotalMessage;
 import feup.sdis.protocol.messages.parsers.PutChunkParser;
 import feup.sdis.utils.Security;
@@ -76,8 +74,6 @@ public class PutChunkListener extends ProtocolListener {
         final SSLManager monitor = server.getConnection(host, port);
         if(monitor == null)
             return;
-
-        // Check if the file is known
         final UUID fileId = protocolMessage.getFileId();
         if(fileId == null)
             return;
@@ -89,6 +85,7 @@ public class PutChunkListener extends ProtocolListener {
             return;
         final int minReplicas = protocolMessage.getMinReplicas();
 
+        // Check if the file is known
         final UUID peer = server.getUUID(host, port);
         if(peer == null)
             return;

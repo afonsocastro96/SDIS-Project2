@@ -1,6 +1,5 @@
 package feup.sdis.protocol.initiators;
 
-import feup.sdis.Peer;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.ChunkListener;
 import feup.sdis.protocol.messages.GetChunkMessage;
