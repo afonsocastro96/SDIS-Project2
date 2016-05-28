@@ -66,7 +66,7 @@ public class RestoreCommand implements Command {
         Node.getLogger().log(Level.DEBUG, "Trying to restore " + totalChunks + " chunks.");
         for (int chunkNo = 0; chunkNo < totalChunks; chunkNo++) {
             getChunkInitiator = new GetChunkInitiator(Peer.getInstance().getMonitor(), fileId, chunkNo);
-            getChunkInitiator.setMaxRounds(3000);
+            getChunkInitiator.setMaxRounds(30000);
             getChunkThread = new Thread(getChunkInitiator);
             getChunkThread.start();
 
