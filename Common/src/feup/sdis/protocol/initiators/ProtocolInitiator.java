@@ -21,7 +21,7 @@ public abstract class ProtocolInitiator implements Runnable {
     /**
      * Maximum rounds before attempting to resend the message
      */
-    protected int MAX_ROUNDS = 5000;
+    protected int MAX_ROUNDS = 5000; // 5 seconds before attempts
 
     /**
      * Monitor of this initiator

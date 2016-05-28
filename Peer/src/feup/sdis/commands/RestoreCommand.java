@@ -88,6 +88,11 @@ public class RestoreCommand implements Command {
                 return false;
             }
         }
+        try {
+            file.close();
+        } catch (IOException e) {
+            Node.getLogger().log(Level.ERROR, "Could not close the file.");
+        }
 
         return true;
     }
