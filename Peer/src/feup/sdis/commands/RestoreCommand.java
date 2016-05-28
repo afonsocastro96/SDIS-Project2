@@ -66,7 +66,7 @@ public class RestoreCommand implements Command {
         Node.getLogger().log(Level.DEBUG, "Trying to restore " + totalChunks + " chunks.");
         for (int chunkNo = 0; chunkNo < totalChunks; chunkNo++) {
             getChunkInitiator = new GetChunkInitiator(Peer.getInstance().getMonitor(), fileId, chunkNo);
-            getChunkInitiator.setMaxRounds(30000);
+            getChunkInitiator.setMaxRounds(1000);
             getChunkThread = new Thread(getChunkInitiator);
             getChunkThread.start();
 
@@ -75,8 +75,10 @@ public class RestoreCommand implements Command {
                     getChunkThread.join();
                 } catch (InterruptedException ignored) {
                 }
-            if (!getChunkInitiator.hasReceivedResponse())
+            if (!getChunkInitiator.hasReceivedResponse()) {
+                f.delete();
                 return false;
+            }
 
             buffer = getChunkInitiator.getResponse().getBody();
 
@@ -84,6 +86,7 @@ public class RestoreCommand implements Command {
                 file.seek(chunkNo * Protocol.CHUNK_SIZE);
                 file.write(buffer, 0, buffer.length);
             } catch (IOException e) {
+                f.delete();
                 Node.getLogger().log(Level.FATAL, "Could not write the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
                 return false;
             }

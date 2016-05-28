@@ -21,7 +21,7 @@ public abstract class ProtocolInitiator implements Runnable {
     /**
      * Maximum rounds before attempting to resend the message
      */
-    protected int MAX_ROUNDS = 5000; // 5 seconds before attempts
+    protected int MAX_ROUNDS = 500; // 5 seconds before attempts
 
     /**
      * Monitor of this initiator
@@ -154,7 +154,7 @@ public abstract class ProtocolInitiator implements Runnable {
                 resetRounds();
 
             try {
-                Thread.sleep(1);
+                Thread.sleep(10);
             } catch (InterruptedException ignored) {}
         }
 
