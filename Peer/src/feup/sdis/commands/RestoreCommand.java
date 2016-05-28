@@ -79,7 +79,7 @@ public class RestoreCommand implements Command {
                 return false;
 
             buffer = getChunkInitiator.getResponse().getBody();
-
+            Node.getLogger().log(Level.DEBUG, "Size of the chunk " + buffer.length);
             try {
                 file.seek(chunkNo * Protocol.CHUNK_SIZE);
                 file.write(buffer, 0, buffer.length);

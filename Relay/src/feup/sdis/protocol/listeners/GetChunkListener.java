@@ -129,6 +129,7 @@ public class GetChunkListener extends ProtocolListener {
             Node.getLogger().log(Level.FATAL, "Could not decrypt the body. " + e.getMessage());
             return;
         }
+        Node.getLogger().log(Level.DEBUG, "Size of encrypted: " + protocolInitiator.getResponse().getBody().length + " | Decrypted: " + decryptedBody.length);
 
         // Send response to the sender
         try {
