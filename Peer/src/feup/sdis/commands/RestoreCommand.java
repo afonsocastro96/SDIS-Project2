@@ -76,6 +76,10 @@ public class RestoreCommand implements Command {
                 } catch (InterruptedException ignored) {
                 }
             if (!getChunkInitiator.hasReceivedResponse()) {
+                try {
+                    file.close();
+                } catch (IOException ignored) {
+                }
                 f.delete();
                 return false;
             }
@@ -86,6 +90,10 @@ public class RestoreCommand implements Command {
                 file.seek(chunkNo * Protocol.CHUNK_SIZE);
                 file.write(buffer, 0, buffer.length);
             } catch (IOException e) {
+                try {
+                    file.close();
+                } catch (IOException ignored) {
+                }
                 f.delete();
                 Node.getLogger().log(Level.FATAL, "Could not write the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
                 return false;

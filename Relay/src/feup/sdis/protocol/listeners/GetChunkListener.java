@@ -126,7 +126,10 @@ public class GetChunkListener extends ProtocolListener {
         final SecretKey secretKey = Security.recoverSecretKey(Protocol.ENCRYPT_ALGORITHM, encodedKey);
         final byte[] decryptedBody;
         try {
-            decryptedBody = Security.decrypt(Protocol.ENCRYPT_ALGORITHM, secretKey, protocolInitiator.getResponse().getBody());
+            byte[] body = protocolInitiator.getResponse().getBody();
+            if(body == null)
+                return;
+            decryptedBody = Security.decrypt(Protocol.ENCRYPT_ALGORITHM, secretKey, body);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             Node.getLogger().log(Level.FATAL, "Could not decrypt the body. " + e.getMessage());
             return;
