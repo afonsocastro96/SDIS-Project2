@@ -91,6 +91,8 @@ public class GetChunkListener extends ProtocolListener {
             return;
         }
 
+        Node.getLogger().log(Level.DEBUG, "Size of the body: " + size);
+
         // Send response to the sender
         try {
             monitor.write(new ChunkMessage(fileId, chunkNo, Arrays.copyOf(buffer, size)).getBytes());

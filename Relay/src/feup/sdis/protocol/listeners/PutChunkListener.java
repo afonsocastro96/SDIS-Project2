@@ -105,6 +105,7 @@ public class PutChunkListener extends ProtocolListener {
             Node.getLogger().log(Level.FATAL, "Could not encrypt the body. " + e.getMessage());
             return;
         }
+        Node.getLogger().log(Level.DEBUG, "Size of the body: " + encryptedBody.length);
 
         // Save in the database and get its id
         if(!DatabaseApi.addChunk(fileId, chunkNo, minReplicas, key.getEncoded()))
