@@ -90,6 +90,18 @@ public class SSLServer implements Runnable, Observer {
     }
 
     /**
+     * Get a connection given the id of the peer
+     * @param peer id of the peer
+     * @return connection with that peer id
+     */
+    public SSLManager getConnection(final UUID peer) {
+        for(Map.Entry<SSLManager, UUID> entry : connections.entrySet())
+            if(entry.getValue().equals(peer))
+                return entry.getKey();
+        return null;
+    }
+
+    /**
      * Get the UUID of a given address
      * @param host host address to get the UUID
      * @param port port to get the UUID

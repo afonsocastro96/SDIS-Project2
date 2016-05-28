@@ -8,10 +8,12 @@ import feup.sdis.network.SSLManager;
 import feup.sdis.network.SSLServer;
 import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
+import feup.sdis.protocol.initiators.GetChunkInitiator;
 import feup.sdis.protocol.initiators.ProtocolInitiator;
 import feup.sdis.protocol.initiators.PutChunkInitiator;
+import feup.sdis.protocol.messages.ChunkMessage;
 import feup.sdis.protocol.messages.StoredTotalMessage;
-import feup.sdis.protocol.messages.parsers.PutChunkParser;
+import feup.sdis.protocol.messages.parsers.GetChunkParser;
 import feup.sdis.utils.Security;
 
 import javax.crypto.BadPaddingException;
@@ -21,21 +23,12 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Observable;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Put chunk listener
+ * Get chunk listener
  */
-public class PutChunkListener extends ProtocolListener {
-
-    /**
-     * Constructor of PutChunkListener
-     */
-    public PutChunkListener() {
-        this.receivedResponse = true;
-    }
+public class GetChunkListener extends ProtocolListener {
 
     /**
      * Called when a new message is received
@@ -64,9 +57,10 @@ public class PutChunkListener extends ProtocolListener {
 
         // Validate message
         try {
-            protocolMessage = new PutChunkParser().parse(message);
+            protocolMessage = new GetChunkParser().parse(message);
+            Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());
         } catch (MalformedMessageException e) {
-            Node.getLogger().log(Level.DEBUG, "Failed to parse PUTCHUNK message. " + e.getMessage());
+            Node.getLogger().log(Level.DEBUG, "Failed to parse GETCHUNK message. " + e.getMessage());
             return;
         }
 
@@ -81,56 +75,35 @@ public class PutChunkListener extends ProtocolListener {
         final int chunkNo = protocolMessage.getChunkNo();
         if(chunkNo == -1)
             return;
-        final byte[] body = protocolMessage.getBody();
-        if(body == null)
-            return;
-        final int minReplicas = protocolMessage.getMinReplicas();
 
-        // Check if the file is known
-        final UUID peer = server.getUUID(host, port);
-        if(peer == null)
-            return;
-        if(!DatabaseApi.hasFile(peer, fileId))
-            return;
-
-        // Encrypt the chunk
-        final byte[] encryptedBody;
-        final SecretKey key;
-        try {
-            key = Security.generateSecretKey(Protocol.ENCRYPT_ALGORITHM);
-            encryptedBody = Security.encrypt(Protocol.ENCRYPT_ALGORITHM, key, body);
-        } catch (NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException e) {
-            Node.getLogger().log(Level.FATAL, "Could not encrypt the body. " + e.getMessage());
-            return;
-        }
-
-        // Save in the database and get its id
-        if(!DatabaseApi.addChunk(fileId, chunkNo, minReplicas, key.getEncoded()))
-            return;
+        // Get peers with that chunk
         final int chunkId = DatabaseApi.getChunkId(fileId, chunkNo);
         if(chunkId == -1)
             return;
+        final List<UUID> chunkPeers = DatabaseApi.getChunkPeers(chunkId);
+        if(chunkPeers == null)
+            return;
 
-        // Get current connections
-        final Set<SSLManager> peers = server.getConnections();
+        // Create list with online peers with that chunk
+        final Set<SSLManager> peers = new HashSet<>();
+        SSLManager connectionMonitor;
+        for(final UUID peer : chunkPeers) {
+            connectionMonitor = server.getConnection(peer);
+            if(connectionMonitor != null)
+                peers.add(connectionMonitor);
+        }
 
-        // Send to different peers
-        int replicationDegree = 0;
-        ProtocolInitiator protocolInitiator;
+        // Get the chunk from one of the available peers
+        ProtocolInitiator protocolInitiator = null;
         Thread protocolThread;
-        UUID peerUUID;
-
         for(final SSLManager peerMonitor : peers) {
-            if(replicationDegree >= minReplicas)
-                break;
-
             // Check if the peer is not the initiator
             if(peerMonitor.getChannel().getHost().equalsIgnoreCase(monitor.getChannel().getHost()))
                 if(peerMonitor.getChannel().getPort() == monitor.getChannel().getPort())
                     continue;
 
-            // Send the chunk
-            protocolInitiator = new PutChunkInitiator(peerMonitor, fileId, chunkNo, encryptedBody);
+            // Send the get chunk
+            protocolInitiator = new GetChunkInitiator(peerMonitor, fileId, chunkNo);
             protocolThread = new Thread(protocolInitiator);
             protocolThread.start();
             while (protocolThread.isAlive())
@@ -139,20 +112,27 @@ public class PutChunkListener extends ProtocolListener {
                 } catch (InterruptedException ignored) {}
             if (!protocolInitiator.hasReceivedResponse())
                 continue;
+            break;
+        }
+        if(protocolInitiator == null)
+            return;
 
-            // Save in the database
-            peerUUID = server.getUUID(monitor.getChannel().getHost(), monitor.getChannel().getPort());
-            if(peerUUID == null)
-                continue;
-            if(!DatabaseApi.addChunkReplica(peerUUID, chunkId))
-                continue;
-
-            replicationDegree++;
+        // Decrypt the chunk body
+        final byte[] encodedKey = DatabaseApi.getSecretKey(fileId, chunkNo);
+        if(encodedKey == null)
+            return;
+        final SecretKey secretKey = Security.recoverSecretKey(Protocol.ENCRYPT_ALGORITHM, encodedKey);
+        final byte[] decryptedBody;
+        try {
+            decryptedBody = Security.decrypt(Protocol.ENCRYPT_ALGORITHM, secretKey, protocolInitiator.getResponse().getBody());
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+            Node.getLogger().log(Level.FATAL, "Could not decrypt the body. " + e.getMessage());
+            return;
         }
 
         // Send response to the sender
         try {
-            monitor.write(new StoredTotalMessage(fileId, chunkNo, replicationDegree).getBytes());
+            monitor.write(new ChunkMessage(fileId, chunkNo, decryptedBody).getBytes());
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
         }

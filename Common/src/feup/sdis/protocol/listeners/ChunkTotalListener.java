@@ -4,9 +4,11 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
+import feup.sdis.protocol.messages.ChunkTotalMessage;
 import feup.sdis.protocol.messages.parsers.ChunkTotalParser;
 
 import java.util.Observable;
+import java.util.UUID;
 
 /**
  * Chunk total listener
@@ -14,10 +16,31 @@ import java.util.Observable;
 public class ChunkTotalListener extends ProtocolListener {
 
     /**
-     * Constructor of ChunkTotalListener
+     * Host where the chunk total should come
      */
-    public ChunkTotalListener() {
+    private final String host;
+
+    /**
+     * Port where the chunk total should come
+     */
+    private final int port;
+
+    /**
+     * File name to get the total number of chunks
+     */
+    private final String fileName;
+
+    /**
+     * Constructor of ChunkTotalListener
+     * @param host host from where the chunk total should come
+     * @param port port from where the chunk total should come
+     * @param fileName file name to get the total number of chunks
+     */
+    public ChunkTotalListener(final String host, final int port, final String fileName) {
         this.receivedResponse = false;
+        this.host = host;
+        this.port = port;
+        this.fileName = fileName;
     }
 
     /**
@@ -53,6 +76,14 @@ public class ChunkTotalListener extends ProtocolListener {
             Node.getLogger().log(Level.DEBUG, "Failed to parse CHUNKTOTAL message. " + e.getMessage());
             return;
         }
+
+        // Check if this is the chunk total we are expecting
+        if(!host.equalsIgnoreCase(this.host))
+            return;
+        if(port != this.port)
+            return;
+        if(!((ChunkTotalMessage)protocolMessage).getFileName().equalsIgnoreCase(fileName))
+            return;
 
         this.receivedResponse = true;
     }

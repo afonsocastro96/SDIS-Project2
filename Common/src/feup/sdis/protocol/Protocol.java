@@ -14,4 +14,9 @@ public class Protocol {
      * Size of each chunk
      */
     public static final int CHUNK_SIZE = 8096;
+
+    /**
+     * Encryptation algorithm
+     */
+    public static final String ENCRYPT_ALGORITHM = "AES";
 }

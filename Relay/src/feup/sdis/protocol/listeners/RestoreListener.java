@@ -79,7 +79,7 @@ public class RestoreListener extends ProtocolListener{
 
         // Send response to the sender
         try {
-            monitor.write(new ChunkTotalMessage(fileId, fileChunks.size()).getBytes());
+            monitor.write(new ChunkTotalMessage(fileId, fileChunks.size(), ((RestoreMessage) protocolMessage).getFileName()).getBytes());
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
         }
