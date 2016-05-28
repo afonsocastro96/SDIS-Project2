@@ -13,7 +13,7 @@ public class Protocol {
     /**
      * Size of each chunk
      */
-    public static final int CHUNK_SIZE = 8192 * 2 - 1;
+    public static final int CHUNK_SIZE = 8192;
 
     /**
      * Encrypt algorithm

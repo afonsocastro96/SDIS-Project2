@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Observable;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Put chunk listener
@@ -114,7 +111,8 @@ public class PutChunkListener extends ProtocolListener {
             return;
 
         // Get current connections
-        final Set<SSLManager> peers = server.getConnections();
+        final List<SSLManager> peers = new ArrayList<>(server.getConnections());
+        Collections.shuffle(peers);
 
         // Send to different peers
         int replicationDegree = 0;

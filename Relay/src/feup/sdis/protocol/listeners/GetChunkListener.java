@@ -86,13 +86,14 @@ public class GetChunkListener extends ProtocolListener {
             return;
 
         // Create list with online peers with that chunk
-        final Set<SSLManager> peers = new HashSet<>();
+        final List<SSLManager> peers = new ArrayList<>();
         SSLManager connectionMonitor;
         for(final UUID peer : chunkPeers) {
             connectionMonitor = server.getConnection(peer);
             if(connectionMonitor != null)
                 peers.add(connectionMonitor);
         }
+        Collections.shuffle(peers);
 
         // Get the chunk from one of the available peers
         ProtocolInitiator protocolInitiator = null;
