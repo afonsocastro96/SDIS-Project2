@@ -40,7 +40,6 @@ public class RestoreMessage extends ProtocolMessage {
         StringJoiner sj = new StringJoiner(" ");
         sj.add(getMessageType().toString())
                 .add("" + getVersion())
-                .add("" + getFileId())
                 .add("" + fileName);
 
         return sj.toString();
