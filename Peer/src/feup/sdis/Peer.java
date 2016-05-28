@@ -4,6 +4,7 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.initiators.WhoAmIInitiator;
+import feup.sdis.protocol.listeners.PutChunkListener;
 
 import java.io.*;
 import java.net.SocketException;
@@ -100,6 +101,9 @@ public class Peer extends Node implements Observer {
                 whoAmIThread.join();
             } catch (InterruptedException e) {
             }
+
+        // Subscribe listeners
+        getInstance().getMonitor().addObserver(new PutChunkListener());
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
