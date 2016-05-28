@@ -1,5 +1,7 @@
 package feup.sdis.protocol.messages.parsers;
 
+import feup.sdis.Node;
+import feup.sdis.logger.Level;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.FileNameMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
@@ -20,6 +22,7 @@ public class FileNameParser extends ProtocolParser {
     @Override
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);
+
         if (header.size() != 4)
             throw new MalformedMessageException("Wrong number of arguments for the FILENAME message: 4 arguments must be present");
 

@@ -34,7 +34,7 @@ public class FileNameInitiator extends ProtocolInitiator {
         this.fileId = fileId;
         this.fileName = fileName;
 
-        message = new FileNameMessage(this.fileId, this.fileName);
+        message = new FileNameMessage(this.fileId, this.fileName.replaceAll(" ", "%20"));
         listener = new OkListener(
                 monitor.getChannel().getHost(),
                 monitor.getChannel().getPort(),

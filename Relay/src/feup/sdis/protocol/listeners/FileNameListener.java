@@ -59,7 +59,7 @@ public class FileNameListener extends ProtocolListener {
         if(monitor == null)
             return;
 
-        final String fileName = ((FileNameMessage) protocolMessage).getFileName();
+        final String fileName = ((FileNameMessage) protocolMessage).getFileName().replaceAll("%20", " ");
         if(fileName == null)
             return;
         final UUID fileId = protocolMessage.getFileId();

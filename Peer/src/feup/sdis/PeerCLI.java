@@ -4,6 +4,7 @@ import feup.sdis.commands.BackupCommand;
 import feup.sdis.commands.RestoreCommand;
 
 import java.io.File;
+import java.util.Scanner;
 
 /**
  * Created by Afonso on 22/05/2016.
@@ -12,8 +13,9 @@ public class PeerCLI {
     private boolean exit = false;
 
     public void run(){
+        Scanner scanner = new Scanner(System.in);
         while(true){
-            String input = System.console().readLine();
+            String input = scanner.nextLine();
             handleInput(input);
             if(exit)
                 return;

@@ -71,7 +71,6 @@ public class PutChunkListener extends ProtocolListener {
             return;
         }
 
-
         // Get the needed information
         final SSLServer server = Relay.getInstance().getServer();
         final SSLManager monitor = server.getConnection(host, port);

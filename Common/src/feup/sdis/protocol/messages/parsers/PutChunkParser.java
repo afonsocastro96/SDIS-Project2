@@ -1,5 +1,8 @@
 package feup.sdis.protocol.messages.parsers;
 
+import com.sun.deploy.util.StringUtils;
+import feup.sdis.Node;
+import feup.sdis.logger.Level;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.PutChunkMessage;
@@ -33,9 +36,8 @@ public class PutChunkParser extends ProtocolParser {
             throw new MalformedMessageException("Version must follow the following format: <n>.<m>");
 
         /* Validate file ID */
-        if (!validFileId(header.get(2))){
+        if (!validFileId(header.get(2)))
             throw new MalformedMessageException("File ID must be an UUID");
-        }
 
         /* Validate chunk No */
         if (!validChunkNo(header.get(3)))

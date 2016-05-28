@@ -103,6 +103,8 @@ public class Peer extends Node implements Observer {
 
         // Start the server
         getLogger().log(Level.INFO, "Service started.");
+
+        new PeerCLI().run();
     }
 
     /**
