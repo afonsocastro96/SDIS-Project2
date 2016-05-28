@@ -82,6 +82,11 @@ public class BackupCommand implements Command {
                 return false;
             }
         }
+        try {
+            file.close();
+        } catch (IOException e) {
+            Node.getLogger().log(Level.ERROR, "Could not close the file " + f.getName() + ".");
+        }
 
         return true;
     }

@@ -8,6 +8,7 @@ import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ChunkMessage;
 import feup.sdis.protocol.messages.StoredMessage;
+import feup.sdis.protocol.messages.parsers.GetChunkParser;
 import feup.sdis.protocol.messages.parsers.PutChunkParser;
 
 import java.io.File;
@@ -50,7 +51,7 @@ public class GetChunkListener extends ProtocolListener {
 
         // Validate message
         try {
-            protocolMessage = new PutChunkParser().parse(message);
+            protocolMessage = new GetChunkParser().parse(message);
         } catch (MalformedMessageException e) {
             Node.getLogger().log(Level.DEBUG, "Failed to parse GETCHUNK message. " + e.getMessage());
             return;
