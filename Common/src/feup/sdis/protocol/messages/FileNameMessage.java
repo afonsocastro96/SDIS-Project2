@@ -25,6 +25,14 @@ public class FileNameMessage extends ProtocolMessage {
     }
 
     /**
+     * Get the file name
+     * @return file name
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
      * Get the header of the message
      * @return header of the message
      */

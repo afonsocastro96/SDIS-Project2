@@ -1,14 +1,19 @@
-package feup.sdis.listeners;
+package feup.sdis.protocol.listeners;
 
 import feup.sdis.Node;
+import feup.sdis.Relay;
+import feup.sdis.database.DatabaseApi;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
+import feup.sdis.network.SSLServer;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.listeners.ProtocolListener;
-import feup.sdis.protocol.messages.ProtocolMessage;
+import feup.sdis.protocol.messages.FileNameMessage;
+import feup.sdis.protocol.messages.OkMessage;
 import feup.sdis.protocol.messages.parsers.FileNameParser;
 
+import java.io.IOException;
 import java.util.Observable;
+import java.util.UUID;
 
 /**
  * File name listener
@@ -46,6 +51,33 @@ public class FileNameListener extends ProtocolListener {
         } catch (MalformedMessageException e){
             Node.getLogger().log(Level.DEBUG, "Failed to parse FILENAME message. " + e.getMessage());
             return;
+        }
+
+        // Get the needed information
+        final SSLServer server = Relay.getInstance().getServer();
+        final SSLManager monitor = server.getConnection(host, port);
+        if(monitor == null)
+            return;
+
+        final String fileName = ((FileNameMessage) protocolMessage).getFileName();
+        if(fileName == null)
+            return;
+        final UUID fileId = protocolMessage.getFileId();
+        if(fileId == null)
+            return;
+        final UUID peer = server.getUUID(host, port);
+        if(peer == null)
+            return;
+
+        // Save in the database
+        if(!DatabaseApi.addFile(fileId, peer, fileName))
+            return;
+
+        // Send response to the sender
+        try {
+            monitor.write(new OkMessage(protocolMessage.getHeader()).getBytes());
+        } catch (IOException e) {
+            Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
         }
     }
 }

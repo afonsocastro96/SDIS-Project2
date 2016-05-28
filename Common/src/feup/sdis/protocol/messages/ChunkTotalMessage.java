@@ -6,10 +6,16 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Chunk total message
  */
 public class ChunkTotalMessage extends ProtocolMessage {
-    public ChunkTotalMessage(UUID fileId, int chunkNo) {
+
+    /**
+     * Constructor of ChunkTotalMessage
+     * @param fileId file id to get the total number of chunks
+     * @param chunkNo chunk number
+     */
+    public ChunkTotalMessage(final UUID fileId, final int chunkNo) {
         super(Type.CHUNKTOTAL, Protocol.VERSION, fileId, chunkNo);
     }
 }

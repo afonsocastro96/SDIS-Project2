@@ -1,7 +1,8 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
 
 import feup.sdis.Peer;
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.OkListener;
 import feup.sdis.protocol.messages.FileNameMessage;
 
@@ -24,17 +25,19 @@ public class FileNameInitiator extends ProtocolInitiator {
 
     /**
      * Constructor of FileNameInitiator
+     * @param monitor monitor of this initiator
      * @param fileId id of the file
      * @param fileName name of the file
      */
-    public FileNameInitiator(final UUID fileId, final String fileName){
+    public FileNameInitiator(final SSLManager monitor, final UUID fileId, final String fileName){
+        super(monitor);
         this.fileId = fileId;
         this.fileName = fileName;
 
         message = new FileNameMessage(this.fileId, this.fileName);
         listener = new OkListener(
-                Peer.getInstance().getMonitor().getChannel().getHost(),
-                Peer.getInstance().getMonitor().getChannel().getPort(),
+                monitor.getChannel().getHost(),
+                monitor.getChannel().getPort(),
                 message.getHeader());
     }
 

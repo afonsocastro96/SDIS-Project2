@@ -1,14 +1,14 @@
 package feup.sdis.commands;
 
 import feup.sdis.Node;
-import feup.sdis.initiators.GetChunkInitiator;
-import feup.sdis.initiators.RestoreInitiator;
+import feup.sdis.Peer;
+import feup.sdis.protocol.initiators.GetChunkInitiator;
+import feup.sdis.protocol.initiators.RestoreInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.messages.ProtocolMessage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class RestoreCommand implements Command {
      */
     public static boolean execute(final File f) {
         // Request the number of chunks of the file
-        final RestoreInitiator restoreInitiator = new RestoreInitiator(f.getAbsolutePath());
+        final RestoreInitiator restoreInitiator = new RestoreInitiator(Peer.getInstance().getMonitor(), f.getAbsolutePath());
         final Thread restoreThread = new Thread(restoreInitiator);
         restoreThread.start();
         while(restoreThread.isAlive())
@@ -59,7 +59,7 @@ public class RestoreCommand implements Command {
 
         // Get all the chunks
         for(int chunkNo = 0; chunkNo < totalChunks; ++chunkNo){
-            getChunkInitiator = new GetChunkInitiator(fileId, chunkNo);
+            getChunkInitiator = new GetChunkInitiator(Peer.getInstance().getMonitor(), fileId, chunkNo);
             getChunkThread = new Thread(getChunkInitiator);
             getChunkThread.start();
 
@@ -77,7 +77,7 @@ public class RestoreCommand implements Command {
                 file.seek(chunkNo * Protocol.CHUNK_SIZE);
                 file.write(buffer, 0, buffer.length);
             } catch (IOException e) {
-                Node.getLogger().log(Level.FATAL, "Could not seek the specified chunk. " + e.getMessage());
+                Node.getLogger().log(Level.FATAL, "Could not write the specified chunk. " + e.getMessage());
                 return false;
             }
         }

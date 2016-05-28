@@ -1,4 +1,4 @@
-package feup.sdis.listeners;
+package feup.sdis.protocol.listeners;
 
 import feup.sdis.Node;
 import feup.sdis.Relay;
@@ -7,9 +7,7 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.network.SSLServer;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.listeners.ProtocolListener;
 import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.WhoAmIMessage;
 import feup.sdis.protocol.messages.parsers.WhoAmIParser;
 

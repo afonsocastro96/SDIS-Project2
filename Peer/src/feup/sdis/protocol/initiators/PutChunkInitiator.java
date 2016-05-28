@@ -1,7 +1,10 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
 import feup.sdis.Peer;
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.OkListener;
+import feup.sdis.protocol.listeners.StoredListener;
+import feup.sdis.protocol.listeners.StoredTotalListener;
 import feup.sdis.protocol.messages.PutChunkMessage;
 
 import java.util.UUID;
@@ -33,20 +36,23 @@ public class PutChunkInitiator extends ProtocolInitiator {
 
     /**
      * Constructor of PutChunkInitiator
+     * @param monitor monitor of this channel
      * @param chunkNo number of the chunk to put
      * @param minReplicas replication degree
      * @param body
      */
-    public PutChunkInitiator(final UUID fileId, final int chunkNo, final int minReplicas, final byte[] body){
+    public PutChunkInitiator(final SSLManager monitor, final UUID fileId, final int chunkNo, final int minReplicas, final byte[] body){
+        super(monitor);
         this.fileId = fileId;
         this.chunkNo = chunkNo;
         this.minReplicas = minReplicas;
         this.body = body;
 
-        message = new PutChunkMessage(fileId, chunkNo, minReplicas, body);
-        listener = new OkListener(
-                Peer.getInstance().getMonitor().getChannel().getHost(),
-                Peer.getInstance().getMonitor().getChannel().getPort(),
-                message.getHeader());
+        message = new PutChunkMessage(this.fileId, this.chunkNo, this.minReplicas, this.body);
+        listener = new StoredTotalListener(
+                monitor.getChannel().getHost(),
+                monitor.getChannel().getPort(),
+                this.fileId,
+                this.chunkNo);
     }
 }

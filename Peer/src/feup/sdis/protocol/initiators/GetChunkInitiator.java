@@ -1,6 +1,7 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
 import feup.sdis.Peer;
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.ChunkListener;
 import feup.sdis.protocol.messages.GetChunkMessage;
 
@@ -23,17 +24,19 @@ public class GetChunkInitiator extends ProtocolInitiator {
 
     /**
      * Constructor of GetChunkInitiator
+     * @param monitor monitor of this channel
      * @param fileId id of the file to get the chunk
      * @param chunkNo number of the chunk to get
      */
-    public GetChunkInitiator(UUID fileId, int chunkNo){
+    public GetChunkInitiator(final SSLManager monitor, final UUID fileId, final int chunkNo){
+        super(monitor);
         this.fileId = fileId;
         this.chunkNo = chunkNo;
 
         message = new GetChunkMessage(fileId, chunkNo);
         listener = new ChunkListener(
-                Peer.getInstance().getMonitor().getChannel().getHost(),
-                Peer.getInstance().getMonitor().getChannel().getPort(),
+                monitor.getChannel().getHost(),
+                monitor.getChannel().getPort(),
                 fileId,
                 chunkNo);
     }

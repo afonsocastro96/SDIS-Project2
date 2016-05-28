@@ -1,8 +1,8 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
 import feup.sdis.Node;
-import feup.sdis.Peer;
 import feup.sdis.logger.Level;
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.ProtocolListener;
 import feup.sdis.protocol.messages.ProtocolMessage;
 
@@ -22,6 +22,11 @@ public abstract class ProtocolInitiator implements Runnable {
      * Maximum rounds before attempting to resend the message
      */
     protected final int MAX_ROUNDS = 5;
+
+    /**
+     * Monitor of this initiator
+     */
+    protected final SSLManager monitor;
 
     /**
      * Message of the protocol
@@ -45,8 +50,10 @@ public abstract class ProtocolInitiator implements Runnable {
 
     /**
      * Constructor of ProtocolInitiator
+     * @param monitor monitor of this initiator
      */
-    public ProtocolInitiator() {
+    public ProtocolInitiator(final SSLManager monitor) {
+        this.monitor = monitor;
         this.attempts = 0;
         this.rounds = 0;
     }
@@ -102,7 +109,7 @@ public abstract class ProtocolInitiator implements Runnable {
      */
     protected boolean sendMessage(final ProtocolMessage message) {
         try {
-            Peer.getInstance().getMonitor().write(message.getBytes());
+            monitor.write(message.getBytes());
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
             return false;
@@ -123,7 +130,7 @@ public abstract class ProtocolInitiator implements Runnable {
      */
     @Override
     public void run() {
-        Peer.getInstance().getMonitor().addObserver(listener);
+        monitor.addObserver(listener);
 
         while(!hasReceivedResponse()){
             if(getAttempts() >= MAX_ATTEMPTS)
@@ -143,7 +150,7 @@ public abstract class ProtocolInitiator implements Runnable {
             } catch (InterruptedException ignored) {}
         }
 
-        Peer.getInstance().getMonitor().deleteObserver(listener);
+        monitor.deleteObserver(listener);
 
         if(hasReceivedResponse())
             Node.getLogger().log(Level.DEBUG, "Server received the message " + message.getHeader());

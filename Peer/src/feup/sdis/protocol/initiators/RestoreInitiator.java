@@ -1,7 +1,7 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.ChunkTotalListener;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.RestoreMessage;
 
 /**
@@ -11,9 +11,11 @@ public class RestoreInitiator extends ProtocolInitiator {
 
     /**
      * Constructor of RestoreInitiator
+     * @param monitor monitor of this channel
      * @param fileName path of the file to be restored
      */
-    public RestoreInitiator(final String fileName){
+    public RestoreInitiator(final SSLManager monitor, final String fileName){
+        super(monitor);
         message = new RestoreMessage(fileName);
         listener = new ChunkTotalListener();
     }

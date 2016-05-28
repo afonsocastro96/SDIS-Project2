@@ -1,6 +1,7 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
 import feup.sdis.Peer;
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.OkListener;
 import feup.sdis.protocol.messages.WhoAmIMessage;
 
@@ -11,12 +12,15 @@ public class WhoAmIInitiator extends ProtocolInitiator {
 
     /**
      * Constructor of WhoAmIInitiator
+     * @param monitor monitor of this channel
      */
-    public WhoAmIInitiator() {
+    public WhoAmIInitiator(final SSLManager monitor) {
+        super(monitor);
+
         message = new WhoAmIMessage(Peer.getInstance().getId());
         listener = new OkListener(
-                Peer.getInstance().getMonitor().getChannel().getHost(),
-                Peer.getInstance().getMonitor().getChannel().getPort(),
+                monitor.getChannel().getHost(),
+                monitor.getChannel().getPort(),
                 message.getHeader());
     }
 }

@@ -1,8 +1,9 @@
-package feup.sdis.initiators;
+package feup.sdis.protocol.initiators;
 
 import feup.sdis.Node;
 import feup.sdis.Peer;
 import feup.sdis.logger.Level;
+import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.messages.ChunkMessage;
 
 /**
@@ -22,10 +23,12 @@ public class ChunkInitiator extends ProtocolInitiator {
 
     /**
      * Constructor of ChunkInitiator
+     * @param monitor monitor of the initiator
      * @param chunkNo number of the chunk
      * @param body body of the chunk
      */
-    public ChunkInitiator(int chunkNo, byte[] body){
+    public ChunkInitiator(final SSLManager monitor, final int chunkNo, final byte[] body){
+        super(monitor);
         this.chunkNo = chunkNo;
         this.body = body;
 

@@ -1,10 +1,12 @@
 package feup.sdis.commands;
 
 import feup.sdis.Node;
-import feup.sdis.initiators.FileNameInitiator;
-import feup.sdis.initiators.PutChunkInitiator;
+import feup.sdis.Peer;
+import feup.sdis.protocol.initiators.FileNameInitiator;
+import feup.sdis.protocol.initiators.PutChunkInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.Protocol;
+import feup.sdis.protocol.messages.StoredTotalMessage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,7 +28,7 @@ public class BackupCommand implements Command {
      */
     public static boolean execute(final File f, final int minReplicas) {
         // Send file name
-        final FileNameInitiator fileNameInitiator = new FileNameInitiator(UUID.randomUUID(), f.getAbsolutePath());
+        final FileNameInitiator fileNameInitiator = new FileNameInitiator(Peer.getInstance().getMonitor(), UUID.randomUUID(), f.getAbsolutePath());
         final Thread fileNameThread = new Thread(fileNameInitiator);
         fileNameThread.start();
         while (fileNameThread.isAlive())
@@ -50,6 +52,7 @@ public class BackupCommand implements Command {
         int totalChunks = (int) (f.length() / Protocol.CHUNK_SIZE) + 1;
         PutChunkInitiator putChunkInitiator;
         Thread putChunkThread;
+        int replicationDegree;
 
         // Send all chunks
         for (int chunkNo = 0; chunkNo < totalChunks; ++chunkNo) {
@@ -58,7 +61,7 @@ public class BackupCommand implements Command {
                 int size = file.read(buffer);
 
                 // Send the chunk
-                putChunkInitiator = new PutChunkInitiator(fileNameInitiator.getFileId(), chunkNo, minReplicas, Arrays.copyOf(buffer, size));
+                putChunkInitiator = new PutChunkInitiator(Peer.getInstance().getMonitor(), fileNameInitiator.getFileId(), chunkNo, minReplicas, Arrays.copyOf(buffer, size));
                 putChunkThread = new Thread(putChunkInitiator);
                 putChunkThread.start();
                 while (putChunkThread.isAlive())
@@ -67,8 +70,14 @@ public class BackupCommand implements Command {
                     } catch (InterruptedException ignored) {}
                 if (!putChunkInitiator.hasReceivedResponse())
                     return false;
+
+                replicationDegree = ((StoredTotalMessage)putChunkInitiator.getResponse()).getReplicas();
+                if(replicationDegree == 0)
+                    Node.getLogger().log(Level.ERROR, "Could not backup the chunk number " + chunkNo + ".");
+                else if(replicationDegree < minReplicas)
+                    Node.getLogger().log(Level.WARNING, "Could not get the desired replication degree (" + replicationDegree + " / " + minReplicas + ") of the chunk number " + chunkNo + ".");
             } catch (IOException e) {
-                Node.getLogger().log(Level.FATAL, "Could not seek the specified chunk. " + e.getMessage());
+                Node.getLogger().log(Level.FATAL, "Could not seek the specified chunk number " + chunkNo + ". " + e.getMessage());
                 return false;
             }
         }

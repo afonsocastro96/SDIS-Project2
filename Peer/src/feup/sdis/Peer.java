@@ -1,6 +1,6 @@
 package feup.sdis;
 
-import feup.sdis.initiators.WhoAmIInitiator;
+import feup.sdis.protocol.initiators.WhoAmIInitiator;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
@@ -92,7 +92,7 @@ public class Peer extends Node implements Observer {
             } catch (InterruptedException ignored) {
             }
         }
-        final WhoAmIInitiator initiator = new WhoAmIInitiator();
+        final WhoAmIInitiator initiator = new WhoAmIInitiator(Peer.getInstance().getMonitor());
         final Thread whoAmIThread = new Thread(initiator);
         whoAmIThread.start();
         while (whoAmIThread.isAlive())

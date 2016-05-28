@@ -4,25 +4,23 @@ import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.StoredParser;
 
 import java.util.Observable;
 import java.util.UUID;
 
 /**
- * Stored listener
+ * Stored total listener
  */
-public class StoredListener extends ProtocolListener {
+public class StoredTotalListener extends ProtocolListener {
 
     /**
-     * Host where the stored should come
+     * Host where the stored total should come
      */
     private final String host;
 
     /**
-     * Port where the stored should come
+     * Port where the stored total should come
      */
     private final int port;
 
@@ -43,7 +41,7 @@ public class StoredListener extends ProtocolListener {
      * @param fileId file id that was stored
      * @param chunkNo number of the chunk that was stored
      */
-    public StoredListener(final String host, final int port, final UUID fileId, final int chunkNo) {
+    public StoredTotalListener(final String host, final int port, final UUID fileId, final int chunkNo) {
         this.receivedResponse = false;
         this.host = host;
         this.port = port;
@@ -80,11 +78,11 @@ public class StoredListener extends ProtocolListener {
         try {
             protocolMessage = new StoredParser().parse(message);
         } catch (MalformedMessageException e) {
-            Node.getLogger().log(Level.DEBUG, "Failed to parse STORED message. " + e.getMessage());
+            Node.getLogger().log(Level.DEBUG, "Failed to parse STOREDTOTAL message. " + e.getMessage());
             return;
         }
 
-        // Check if this is the stored we are expecting
+        // Check if this is the stored total we are expecting
         if(!host.equalsIgnoreCase(this.host))
             return;
         if(port != this.port)

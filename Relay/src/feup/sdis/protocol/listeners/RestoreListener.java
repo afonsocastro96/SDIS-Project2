@@ -1,11 +1,9 @@
-package feup.sdis.listeners;
+package feup.sdis.protocol.listeners;
 
 import feup.sdis.Node;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.listeners.ProtocolListener;
-import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.parsers.RestoreParser;
 
 import java.util.Observable;

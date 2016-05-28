@@ -3,13 +3,14 @@ package feup.sdis.protocol.messages.parsers;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ChunkTotalMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
+import feup.sdis.protocol.messages.StoredTotalMessage;
 
 import java.util.UUID;
 
 /**
- * Chunk total parser
+ * Stored total parser
  */
-public class ChunkTotalParser extends ProtocolParser {
+public class StoredTotalParser extends ProtocolParser {
 
     /**
      * Parse a message
@@ -22,10 +23,10 @@ public class ChunkTotalParser extends ProtocolParser {
         splitMessage(message);
 
         if(header.size() != 3)
-            throw new MalformedMessageException("Wrong number of arguments for the CHUNKTOTAL message: 4 arguments must be present");
+            throw new MalformedMessageException("Wrong number of arguments for the STOREDTOTAL message: 3 arguments must be present");
 
         /* Validate protocol */
-        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.CHUNKTOTAL.toString()))
+        if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.STOREDTOTAL.toString()))
             throw new MalformedMessageException("Wrong protocol");
 
         /* Validate version */
@@ -40,6 +41,10 @@ public class ChunkTotalParser extends ProtocolParser {
         if(!validChunkNo(header.get(3)))
             throw new MalformedMessageException("Chunk Number must be an integer smaller than 1000000");
 
-        return new ChunkTotalMessage(UUID.fromString(header.get(2)), Integer.parseInt(header.get(3)));
+        /* Validate Replication Deg */
+        if(!validReplicationDeg(header.get(4)))
+            throw new MalformedMessageException("Replication Degree must be a single digit");
+
+        return new StoredTotalMessage(UUID.fromString(header.get(2)), Integer.parseInt(header.get(3)), Integer.parseInt(header.get(4)));
     }
 }

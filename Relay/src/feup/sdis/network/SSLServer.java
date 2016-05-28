@@ -1,8 +1,9 @@
 package feup.sdis.network;
 
 import feup.sdis.Node;
-import feup.sdis.listeners.FileNameListener;
-import feup.sdis.listeners.WhoAmIListener;
+import feup.sdis.protocol.listeners.FileNameListener;
+import feup.sdis.protocol.listeners.PutChunkListener;
+import feup.sdis.protocol.listeners.WhoAmIListener;
 import feup.sdis.logger.Level;
 import feup.sdis.protocol.listeners.*;
 
@@ -64,10 +65,18 @@ public class SSLServer implements Runnable, Observer {
      */
     public SSLServer(final String host, final int port) {
         this.opened = new AtomicBoolean(false);
-        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new StoredListener(), new FileNameListener(), new HasChunkListener(), new WhoAmIListener());
+        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new FileNameListener(), new WhoAmIListener());
         this.host = host;
         this.port = port;
         this.connections = Collections.synchronizedMap(new HashMap<>());
+    }
+
+    /**
+     * Get the connections to the server
+     * @return connections to the server
+     */
+    public Set<SSLManager> getConnections() {
+        return connections.keySet();
     }
 
     /**

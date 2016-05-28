@@ -73,6 +73,19 @@ public class DatabaseApi {
     }
 
     /**
+     * Check if a given file from a peer is saved in the system
+     * @param serialNumber serial number of the peer
+     * @param fileId id of the file
+     * @return true if is saved, false otherwise
+     */
+    public static boolean hasFile(final UUID serialNumber, final UUID fileId) {
+        final String query = "SELECT uuid FROM files WHERE peer = ? AND uuid = ?;";
+        final Object[] params = new Object[]{serialNumber.toString(), fileId};
+
+        return hasResult(query, params);
+    }
+
+    /**
      * Add a file to the database
      * @param file file id to be added
      * @param serialNumber serial number of the peer that has the file
