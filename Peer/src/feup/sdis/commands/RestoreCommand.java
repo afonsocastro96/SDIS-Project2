@@ -14,11 +14,17 @@ import java.io.RandomAccessFile;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Restore command
  */
 public class RestoreCommand implements Command {
+
+    /**
+     * Execute the restore command
+     * @param f file to be restored
+     * @return true if was executed successful, false otherwise
+     */
     public static boolean execute(final File f) {
-        /* Request the number of chunks */
+        // Request the number of chunks of the file
         final RestoreInitiator restoreInitiator = new RestoreInitiator(f.getAbsolutePath());
         final Thread restoreThread = new Thread(restoreInitiator);
         restoreThread.start();
@@ -29,30 +35,29 @@ public class RestoreCommand implements Command {
         if (!restoreInitiator.hasReceivedResponse())
             return false;
 
-        ProtocolMessage message = restoreInitiator.getResponse();
-        int totalChunks = message.getChunkNo();
-        UUID fileId = message.getFileId();
+        final ProtocolMessage message = restoreInitiator.getResponse();
+        final int totalChunks = message.getChunkNo();
+        final UUID fileId = message.getFileId();
         if(totalChunks == -1)
             return false;
 
-        /* Create the file and open it*/
+        // Create and open the file
         final RandomAccessFile file;
         try {
             if (!f.createNewFile())
                 return false;
             file = new RandomAccessFile(f, "w");
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             Node.getLogger().log(Level.FATAL, "Could not open the file. " + e.getMessage());
-            return false;
-        } catch (IOException e) {
             return false;
         }
 
+        // Create needed variables
         byte[] buffer;
         GetChunkInitiator getChunkInitiator;
         Thread getChunkThread;
 
-        /* Get the chunks */
+        // Get all the chunks
         for(int chunkNo = 0; chunkNo < totalChunks; ++chunkNo){
             getChunkInitiator = new GetChunkInitiator(fileId, chunkNo);
             getChunkThread = new Thread(getChunkInitiator);

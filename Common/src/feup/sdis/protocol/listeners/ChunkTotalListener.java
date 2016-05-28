@@ -10,9 +10,15 @@ import feup.sdis.protocol.messages.parsers.ChunkTotalParser;
 import java.util.Observable;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Chunk total listener
  */
 public class ChunkTotalListener extends ProtocolListener {
+
+    /**
+     * Called when a new message is received
+     * @param o object that was being observed
+     * @param arg argument of the notification
+     */
     @Override
     public void update(Observable o, Object arg) {
         if(!(o instanceof SSLManager))
@@ -37,7 +43,7 @@ public class ChunkTotalListener extends ProtocolListener {
         try {
             protocolMessage = new ChunkTotalParser().parse(message);
         } catch (MalformedMessageException e) {
-            Node.getLogger().log(Level.DEBUG, "Failed to parse GETCHUNK message. " + e.getMessage());
+            Node.getLogger().log(Level.DEBUG, "Failed to parse CHUNKTOTAL message. " + e.getMessage());
             return;
         }
     }

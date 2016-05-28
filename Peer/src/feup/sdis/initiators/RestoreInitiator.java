@@ -5,10 +5,15 @@ import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.RestoreMessage;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Restore initiator
  */
 public class RestoreInitiator extends ProtocolInitiator {
-    public RestoreInitiator(String fileName){
+
+    /**
+     * Constructor of RestoreInitiator
+     * @param fileName path of the file to be restored
+     */
+    public RestoreInitiator(final String fileName){
         message = new RestoreMessage(fileName);
         listener = new ChunkTotalListener();
     }

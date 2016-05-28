@@ -11,9 +11,10 @@ import feup.sdis.protocol.messages.parsers.RestoreParser;
 import java.util.Observable;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Restore listener
  */
 public class RestoreListener extends ProtocolListener{
+
     /**
      * Called when a new message is received
      * @param o object that was being observed
@@ -39,7 +40,6 @@ public class RestoreListener extends ProtocolListener{
         final int port = (Integer) objects[1];
         final byte[] message = (byte[]) objects[2];
 
-        final ProtocolMessage protocolMessage;
         try{
             protocolMessage = new RestoreParser().parse(message);
             Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());

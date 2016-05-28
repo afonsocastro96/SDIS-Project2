@@ -40,7 +40,6 @@ public class FileNameListener extends ProtocolListener {
         final int port = (Integer) objects[1];
         final byte[] message = (byte[]) objects[2];
 
-        final ProtocolMessage protocolMessage;
         try{
             protocolMessage = new FileNameParser().parse(message);
             Node.getLogger().log(Level.DEBUG, protocolMessage.getHeader());

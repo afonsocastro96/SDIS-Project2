@@ -9,6 +9,9 @@ import java.util.Observer;
  */
 public abstract class ProtocolListener implements Observer {
 
+    /**
+     * Protocol message received by the listener
+     */
     protected ProtocolMessage protocolMessage;
 
     /**
