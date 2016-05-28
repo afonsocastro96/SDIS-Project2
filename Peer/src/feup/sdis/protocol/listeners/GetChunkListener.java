@@ -80,7 +80,7 @@ public class GetChunkListener extends ProtocolListener {
             return;
 
         // Read the chunk
-        final byte[] buffer = new byte[Protocol.CHUNK_SIZE * 2];
+        final byte[] buffer = new byte[Protocol.CHUNK_SIZE + 10];
         final int size;
         try {
             final FileInputStream fileInputStream = new FileInputStream(chunkFile);
@@ -90,8 +90,6 @@ public class GetChunkListener extends ProtocolListener {
             Node.getLogger().log(Level.FATAL, "Could not read the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
             return;
         }
-
-        Node.getLogger().log(Level.DEBUG, "Size of the body: " + size);
 
         // Send response to the sender
         try {
