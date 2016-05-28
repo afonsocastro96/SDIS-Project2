@@ -152,6 +152,7 @@ public class SSLChannel {
      */
     public byte[] read() throws IOException {
         int size = readMessageSize();
+        Node.getLogger().log(Level.DEBUG, "Going to read a message with " + size + " bytes.");
         byte[] data = readMessageContent(size);
         Node.getLogger().log(Level.DEBUG, "Received a message with size of " + size + " bytes.");
         return data;

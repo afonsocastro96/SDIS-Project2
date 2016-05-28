@@ -13,5 +13,5 @@ public class Protocol {
     /**
      * Size of each chunk
      */
-    public static final int CHUNK_SIZE = 1024 * 128;
+    public static final int CHUNK_SIZE = 8096;
 }
