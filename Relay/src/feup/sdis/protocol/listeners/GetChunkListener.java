@@ -103,6 +103,7 @@ public class GetChunkListener extends ProtocolListener {
                     continue;
 
             // Send the get chunk
+            Node.getLogger().log(Level.DEBUG, "Requesting chunk from peer.");
             protocolInitiator = new GetChunkInitiator(peerMonitor, fileId, chunkNo);
             protocolThread = new Thread(protocolInitiator);
             protocolThread.start();

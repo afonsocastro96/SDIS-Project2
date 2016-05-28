@@ -5,9 +5,16 @@ import feup.sdis.protocol.messages.ProtocolMessage;
 import feup.sdis.protocol.messages.RestoreMessage;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Restore parser
  */
 public class RestoreParser extends ProtocolParser {
+
+    /**
+     * Parse a message
+     * @param message message to be parsed
+     * @return parsed protocol message
+     * @throws MalformedMessageException when message is malformed
+     */
     @Override
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);

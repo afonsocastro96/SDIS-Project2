@@ -62,7 +62,7 @@ public class SSLServer implements Runnable, Observer {
      */
     public SSLServer(final String host, final int port) {
         this.opened = new AtomicBoolean(false);
-        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new FileNameListener(), new WhoAmIListener());
+        this.listeners = Arrays.asList(new DeleteListener(), new GetChunkListener(), new PutChunkListener(), new RemovedListener(), new FileNameListener(), new WhoAmIListener(), new RestoreListener());
         this.host = host;
         this.port = port;
         this.connections = Collections.synchronizedMap(new HashMap<>());

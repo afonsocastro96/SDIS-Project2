@@ -51,7 +51,7 @@ public class RestoreCommand implements Command {
                     return false;
             if (!f.createNewFile())
                 return false;
-            file = new RandomAccessFile(f, "w");
+            file = new RandomAccessFile(f, "rw");
         } catch (Exception e) {
             Node.getLogger().log(Level.FATAL, "Could not create the file. " + e.getMessage());
             return false;
@@ -63,8 +63,10 @@ public class RestoreCommand implements Command {
         Thread getChunkThread;
 
         // Get all the chunks
+        Node.getLogger().log(Level.DEBUG, "Trying to restore " + totalChunks + " chunks.");
         for (int chunkNo = 0; chunkNo < totalChunks; chunkNo++) {
             getChunkInitiator = new GetChunkInitiator(Peer.getInstance().getMonitor(), fileId, chunkNo);
+            getChunkInitiator.setMaxRounds(30); // Wait at least 10 seconds for each peer
             getChunkThread = new Thread(getChunkInitiator);
             getChunkThread.start();
 

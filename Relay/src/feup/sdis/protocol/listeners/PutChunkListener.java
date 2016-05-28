@@ -141,7 +141,7 @@ public class PutChunkListener extends ProtocolListener {
                 continue;
 
             // Save in the database
-            peerUUID = server.getUUID(monitor.getChannel().getHost(), monitor.getChannel().getPort());
+            peerUUID = server.getUUID(peerMonitor.getChannel().getHost(), peerMonitor.getChannel().getPort());
             if(peerUUID == null)
                 continue;
             if(!DatabaseApi.addChunkReplica(peerUUID, chunkId))
