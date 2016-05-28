@@ -62,7 +62,7 @@ public class BackupCommand implements Command {
 
                 // Send the chunk
                 putChunkInitiator = new PutChunkInitiator(Peer.getInstance().getMonitor(), fileNameInitiator.getFileId(), chunkNo, minReplicas, Arrays.copyOf(buffer, size));
-                putChunkInitiator.setMaxRounds(minReplicas * 3 * 2); // Wait at least 3 seconds for each peer times minimum replicas
+                putChunkInitiator.setMaxRounds(minReplicas * 300 * 2); // Wait at least 3 seconds for each peer times minimum replicas
                 putChunkThread = new Thread(putChunkInitiator);
                 putChunkThread.start();
                 while (putChunkThread.isAlive())
