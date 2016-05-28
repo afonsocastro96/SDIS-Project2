@@ -5,14 +5,30 @@ import feup.sdis.protocol.Protocol;
 import java.util.StringJoiner;
 
 /**
- * Created by Afonso on 27/05/2016.
+ * Restore message
  */
 public class RestoreMessage extends ProtocolMessage {
+
+    /**
+     * Name of the file to be restored
+     */
     private String fileName;
 
+    /**
+     * Constructor of RestoreMessage
+     * @param fileName name of the file to be restored
+     */
     public RestoreMessage(String fileName) {
         super(Type.RESTORE, Protocol.VERSION);
         this.fileName = fileName;
+    }
+
+    /**
+     * Get the file name to be restored
+     * @return file name to be restored
+     */
+    public String getFileName() {
+        return fileName;
     }
 
     /**

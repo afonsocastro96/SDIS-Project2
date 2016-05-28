@@ -86,9 +86,11 @@ public class ChunkListener extends ProtocolListener{
             return;
         if(port != this.port)
             return;
-        if(protocolMessage.getFileId() != fileId)
+        if(!protocolMessage.getFileId().equals(fileId))
             return;
         if(protocolMessage.getChunkNo() != chunkNo)
             return;
+
+        this.receivedResponse = true;
     }
 }

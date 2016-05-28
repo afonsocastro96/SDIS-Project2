@@ -16,7 +16,7 @@ public class RestoreInitiator extends ProtocolInitiator {
      */
     public RestoreInitiator(final SSLManager monitor, final String fileName){
         super(monitor);
-        message = new RestoreMessage(fileName);
+        message = new RestoreMessage(fileName.replaceAll(" ", "%20"));
         listener = new ChunkTotalListener();
     }
 }

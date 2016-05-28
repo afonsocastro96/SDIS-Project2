@@ -21,7 +21,7 @@ public class ChunkTotalParser extends ProtocolParser {
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);
 
-        if(header.size() != 3)
+        if(header.size() != 4)
             throw new MalformedMessageException("Wrong number of arguments for the CHUNKTOTAL message: 4 arguments must be present");
 
         /* Validate protocol */

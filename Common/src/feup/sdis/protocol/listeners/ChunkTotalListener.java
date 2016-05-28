@@ -14,6 +14,13 @@ import java.util.Observable;
 public class ChunkTotalListener extends ProtocolListener {
 
     /**
+     * Constructor of ChunkTotalListener
+     */
+    public ChunkTotalListener() {
+        this.receivedResponse = false;
+    }
+
+    /**
      * Called when a new message is received
      * @param o object that was being observed
      * @param arg argument of the notification
@@ -46,5 +53,7 @@ public class ChunkTotalListener extends ProtocolListener {
             Node.getLogger().log(Level.DEBUG, "Failed to parse CHUNKTOTAL message. " + e.getMessage());
             return;
         }
+
+        this.receivedResponse = true;
     }
 }

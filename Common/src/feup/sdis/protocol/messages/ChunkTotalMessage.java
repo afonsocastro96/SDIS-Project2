@@ -12,10 +12,10 @@ public class ChunkTotalMessage extends ProtocolMessage {
     /**
      * Constructor of ChunkTotalMessage
      * @param fileId file id to get the total number of chunks
-     * @param chunkNo chunk number
+     * @param numberChunks number of chunks
      */
-    public ChunkTotalMessage(final UUID fileId, final int chunkNo) {
-        super(Type.CHUNKTOTAL, Protocol.VERSION, fileId, chunkNo);
+    public ChunkTotalMessage(final UUID fileId, final int numberChunks) {
+        super(Type.CHUNKTOTAL, Protocol.VERSION, fileId, numberChunks);
     }
 }
 
