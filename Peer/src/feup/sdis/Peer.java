@@ -297,7 +297,9 @@ public class Peer extends Node implements Observer {
 
         monitor.retry();
 
-        if(monitor.getRetryAttempt() == 1)
+        if(monitor.getRetryAttempt() == 1) {
             new Thread(this::sendId).start();
+            getInstance().checkIntegrity();
+        }
     }
 }
