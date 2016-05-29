@@ -91,7 +91,7 @@ public class DeleteListener extends ProtocolListener {
         }
 
         // Get the chunk from one of the available peers
-        ProtocolInitiator protocolInitiator = null;
+        ProtocolInitiator protocolInitiator;
         Thread protocolThread;
         for(final SSLManager peerMonitor : peers) {
             // Check if the peer is not the initiator
@@ -114,8 +114,6 @@ public class DeleteListener extends ProtocolListener {
             peerUUID = server.getUUID(peerMonitor.getChannel().getHost(), peerMonitor.getChannel().getPort());
             if(peerUUID == null)
                 continue;
-
-            break;
         }
 
         // Delete from database
