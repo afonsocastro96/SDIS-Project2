@@ -67,7 +67,7 @@ public class PutChunkListener extends ProtocolListener {
         // Create file directory
         final File fileDir = new File("data" + File.separator + fileId.toString());
         if(!fileDir.exists())
-            if(!fileDir.mkdir())
+            if(!fileDir.mkdirs())
                 return;
 
         // Create chunk file
