@@ -1,5 +1,7 @@
 package feup.sdis.protocol.initiators;
 
+import feup.sdis.Node;
+import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.listeners.OkListener;
 import feup.sdis.protocol.messages.HasChunkMessage;

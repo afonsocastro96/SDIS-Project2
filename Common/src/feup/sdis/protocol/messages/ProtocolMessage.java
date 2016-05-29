@@ -189,12 +189,12 @@ public abstract class ProtocolMessage {
      * @return header of the message
      */
     public String getHeader() {
-        StringJoiner sj = new StringJoiner(" ");
+        StringJoiner sj = new StringJoiner("");
         sj.add(messageType.toString())
-                .add("" + version)
-                .add("" + (fileId != null ? fileId : ""))
-                .add("" + (chunkNo >= 0 ? chunkNo : ""))
-                .add("" + (minReplicas >= 0 ? minReplicas : ""));
+                .add(" " + version)
+                .add((fileId != null ? " " + fileId : ""))
+                .add((chunkNo >= 0 ? " " + chunkNo : ""))
+                .add((minReplicas >= 0 ? " " + minReplicas : ""));
 
         return sj.toString();
     }
