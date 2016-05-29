@@ -21,8 +21,8 @@ public class HasChunkParser extends ProtocolParser {
     public ProtocolMessage parse(byte[] message) throws MalformedMessageException {
         splitMessage(message);
 
-        if(header.size() != 3)
-            throw new MalformedMessageException("Wrong number of arguments for the HASCHUNK message: 3 arguments must be present");
+        if(header.size() != 4)
+            throw new MalformedMessageException("Wrong number of arguments for the HASCHUNK message: 4 arguments must be present");
 
         /* Validate protocol */
         if (!header.get(0).equalsIgnoreCase(ProtocolMessage.Type.HASCHUNK.toString()))

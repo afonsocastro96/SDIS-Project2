@@ -126,8 +126,6 @@ public class DeleteListener extends ProtocolListener {
 
             break;
         }
-        if(protocolInitiator == null)
-            return;
 
         // Delete from database
         if(!DatabaseApi.removeFile(fileId))

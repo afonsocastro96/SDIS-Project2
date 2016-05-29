@@ -1,6 +1,8 @@
 package feup.sdis.commands;
 
+import feup.sdis.Node;
 import feup.sdis.Peer;
+import feup.sdis.logger.Level;
 import feup.sdis.protocol.initiators.HasChunkInitiator;
 
 import java.io.File;
@@ -52,8 +54,12 @@ public class VerificationCommand implements Command {
                 // The file doesn't exist in the system, delete it
                 if (hasChunkInitiator.hasReceivedResponse())
                     continue;
-                folder.delete();
+                chunk.delete();
             }
+
+            chunks = folder.listFiles();
+            if (chunks != null && chunks.length == 0)
+                folder.delete();
         }
 
         return true;
