@@ -80,7 +80,6 @@ public class VerificationCommand implements Command {
                     }
 
                 // The file doesn't exist in the system, delete it
-                Node.getLogger().log(Level.WARNING, "Has received a response? " + hasChunkInitiator.hasReceivedResponse());
                 if (!hasChunkInitiator.hasReceivedResponse())
                     chunk.delete();
             }
