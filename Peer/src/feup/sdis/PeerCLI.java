@@ -3,6 +3,7 @@ package feup.sdis;
 import feup.sdis.commands.BackupCommand;
 import feup.sdis.commands.DeleteCommand;
 import feup.sdis.commands.RestoreCommand;
+import feup.sdis.commands.VerificationCommand;
 
 import java.io.File;
 import java.util.Scanner;
@@ -78,6 +79,7 @@ public class PeerCLI {
                 if (args.length != 1)
                     System.out.println("USAGE: verification");
                 else {
+                    VerificationCommand.execute();
                 }
                 break;
             case "exit":

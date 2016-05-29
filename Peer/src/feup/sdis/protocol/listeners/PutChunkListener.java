@@ -70,6 +70,8 @@ public class PutChunkListener extends ProtocolListener {
             if(!fileDir.mkdirs())
                 return;
 
+        // TODO save checksum
+
         // Create chunk file
         final File chunkFile = new File(fileDir.getAbsolutePath() + File.separator + chunkNo + ".bin");
         if(!chunkFile.exists())
