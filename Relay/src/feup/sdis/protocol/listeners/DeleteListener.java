@@ -84,14 +84,16 @@ public class DeleteListener extends ProtocolListener {
             return;
 
         // Get peers with that at least one chunk of the file
-        final List<UUID> chunkPeers = DatabaseApi.getPeersFile(fileId);
-        if(chunkPeers == null)
+        Node.getLogger().log(Level.DEBUG, "Getting peers that has at least a chunk of that file " + fileId.toString() + ".");
+        final List<UUID> peersFile = DatabaseApi.getPeersFile(fileId);
+        if(peersFile == null)
             return;
 
         // Create list with online peers with at least one chunk of that chunk
         final List<SSLManager> peers = new ArrayList<>();
         SSLManager connectionMonitor;
-        for(final UUID chunkPeer : chunkPeers) {
+        UUID peerUUID;
+        for(final UUID chunkPeer : peersFile) {
             connectionMonitor = server.getConnection(chunkPeer);
             if(connectionMonitor != null)
                 peers.add(connectionMonitor);
@@ -116,9 +118,19 @@ public class DeleteListener extends ProtocolListener {
                 } catch (InterruptedException ignored) {}
             if (!protocolInitiator.hasReceivedResponse())
                 continue;
+
+            // Save in the database
+            peerUUID = server.getUUID(peerMonitor.getChannel().getHost(), peerMonitor.getChannel().getPort());
+            if(peerUUID == null)
+                continue;
+
             break;
         }
         if(protocolInitiator == null)
+            return;
+
+        // Delete from database
+        if(!DatabaseApi.removeFile(fileId))
             return;
 
         // Send response to the sender

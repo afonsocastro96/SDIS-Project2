@@ -59,13 +59,12 @@ public class DeleteListener extends ProtocolListener {
 
         // Get file directory
         final File fileDir = new File(fileId.toString());
-        if(!fileDir.exists())
-            return;
-
-        // Delete all files
-        final File[] files = fileDir.listFiles();
-        for (final File f: files) f.delete();
-        fileDir.delete();
+        if(fileDir.exists()) {
+            // Delete all files
+            final File[] files = fileDir.listFiles();
+            for (final File f: files) f.delete();
+            fileDir.delete();
+        }
 
         // Send response to the sender
         try {

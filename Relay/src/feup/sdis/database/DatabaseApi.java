@@ -338,6 +338,31 @@ public class DatabaseApi {
         }
     }
 
+    /**
+     * Get the peers that has replicated at least a chunk from a file
+     * @param fileId id of the file to get the peers with chunks
+     * @return peers with at least one chunk of that file or null in case of error
+     */
+    public static List<UUID> getPeersFile(final UUID fileId) {
+        final String query = "SELECT DISTINCT peer FROM chunks INNER JOIN replicas ON chunks.id = replicas.chunk WHERE file = ?";
+        final Object[] params = new Object[]{fileId.toString()};
+
+        final ResultSet result = executeQuery(query, params);
+        if(result == null)
+            return null;
+
+        try {
+            final List<UUID> peers = new ArrayList<>();
+            while(result.next())
+                peers.add(UUID.fromString(result.getString("peer")));
+
+            return peers;
+        } catch (SQLException e) {
+            Node.getLogger().log(Level.ERROR, "Could get the peers that has at least a chunk from the file. " + e.getMessage());
+            return null;
+        }
+    }
+
     /*
         REPLICAS TABLE
      */
@@ -450,31 +475,6 @@ public class DatabaseApi {
             return chunks;
         } catch (SQLException e) {
             Node.getLogger().log(Level.ERROR, "Could get the replicas of a peer. " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Get the peers that has replicated at least a chunk from a file
-     * @param fileId id of the file to get the peers with chunks
-     * @return peers with at least one chunk of that file or null in case of error
-     */
-    public static List<UUID> getPeersFile(final UUID fileId) {
-        final String query = "SELECT DISTINCT peer FROM chunks INNER JOIN replicas ON chunks.id = replicas.chunk WHERE file = ?";
-        final Object[] params = new Object[]{fileId};
-
-        final ResultSet result = executeQuery(query, params);
-        if(result == null)
-            return null;
-
-        try {
-            final List<UUID> peers = new ArrayList<>();
-            while(result.next())
-                peers.add(UUID.fromString(result.getString("peer")));
-
-            return peers;
-        } catch (SQLException e) {
-            Node.getLogger().log(Level.ERROR, "Could get the peers that has at least a chunk from the file. " + e.getMessage());
             return null;
         }
     }
