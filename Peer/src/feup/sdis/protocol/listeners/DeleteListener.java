@@ -58,7 +58,7 @@ public class DeleteListener extends ProtocolListener {
             return;
 
         // Get file directory
-        final File fileDir = new File(fileId.toString());
+        final File fileDir = new File("data" + File.separator + fileId.toString());
         if(fileDir.exists()) {
             // Delete all files
             final File[] files = fileDir.listFiles();

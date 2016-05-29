@@ -72,7 +72,7 @@ public class GetChunkListener extends ProtocolListener {
             return;
 
         // Create chunk file
-        final File chunkFile = new File(fileId.toString() + File.separator + chunkNo + ".bin");
+        final File chunkFile = new File("data" + File.separator + fileId.toString() + File.separator + chunkNo + ".bin");
         if(!chunkFile.exists())
             return;
 
