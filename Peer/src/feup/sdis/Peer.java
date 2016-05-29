@@ -1,5 +1,6 @@
 package feup.sdis;
 
+import feup.sdis.commands.VerificationCommand;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
@@ -88,6 +89,7 @@ public class Peer extends Node implements Observer {
         getInstance().getMonitor().addObserver(getInstance());
         getInstance().getMonitor().start();
         getInstance().sendId();
+        getInstance().checkIntegrity();
 
         // Subscribe listeners
         getInstance().getMonitor().addObserver(new DeleteListener());
@@ -139,6 +141,30 @@ public class Peer extends Node implements Observer {
                 whoAmIThread.join();
             } catch (InterruptedException ignored) {
             }
+    }
+
+    /**
+     * Check integrity of the system
+     */
+    private void checkIntegrity() {
+        new Thread(() -> {
+            while (!getInstance().getMonitor().isRunning()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ignored) {
+                }
+            }
+            while(getInstance().getMonitor().isRunning()) {
+                if(VerificationCommand.execute())
+                    Node.getLogger().log(Level.INFO, "Integrity check was ran successfully.");
+                else
+                    Node.getLogger().log(Level.WARNING, "Failed to run integrity check.");
+                try {
+                    Thread.sleep((int) (Math.random() * (6 * 60 * 60 * 1000) + (4 * 60 * 60 * 1000)));
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }).start();
     }
 
     /**
