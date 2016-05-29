@@ -124,6 +124,8 @@ public class GetChunkListener extends ProtocolListener {
         final SecretKey secretKey = Security.recoverSecretKey(Protocol.ENCRYPT_ALGORITHM, encodedKey);
         final byte[] decryptedBody;
         try {
+            if(protocolInitiator.getResponse() == null)
+                return;
             byte[] body = protocolInitiator.getResponse().getBody();
             if(body == null)
                 return;
