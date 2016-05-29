@@ -57,6 +57,7 @@ public class VerificationCommand implements Command {
                     checksum = dataInputStream.readLong();
                     size = dataInputStream.read(buffer);
                     body = Arrays.copyOf(buffer, size);
+                    dataInputStream.close();
                 } catch (IOException e) {
                     Node.getLogger().log(Level.FATAL, "Could not read the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
                     continue;
