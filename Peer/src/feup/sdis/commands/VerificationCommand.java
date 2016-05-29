@@ -17,6 +17,8 @@ public class VerificationCommand implements Command {
     public static void execute(){
         File f = new File("data");
         final File[] folders = f.listFiles();
+        if(folders == null)
+            return;
         for(File folder : folders){
             final HasChunkInitiator hasChunkInitiator = new HasChunkInitiator(Peer.getInstance().getMonitor(), UUID.fromString(folder.getName()));
             final Thread hasChunkThread = new Thread(hasChunkInitiator);
