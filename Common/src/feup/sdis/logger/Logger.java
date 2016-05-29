@@ -90,9 +90,11 @@ public class Logger {
             return;
 
         String logRecord = String.format("%s [%s] %s\n", dateFormat.format(new Date()), level.toString(), message);
+        if(level != Level.CONSOLE) {
+            writer.write(logRecord);
+            writer.flush();
+        }
 
-        writer.write(logRecord);
-        writer.flush();
         System.out.print("[" + name + "] " + logRecord);
     }
 }

@@ -29,7 +29,12 @@ public enum Level {
     /**
      * Fatal messages
      */
-    FATAL(4);
+    FATAL(4),
+
+    /**
+     * Console only messages
+     */
+    CONSOLE(5);
 
     /**
      * Severity of the level

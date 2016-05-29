@@ -4,25 +4,35 @@ import feup.sdis.commands.BackupCommand;
 import feup.sdis.commands.DeleteCommand;
 import feup.sdis.commands.RestoreCommand;
 import feup.sdis.commands.VerificationCommand;
+import feup.sdis.logger.Level;
 
 import java.io.File;
 import java.util.Scanner;
 
 /**
- * Created by Afonso on 22/05/2016.
+ * Peer client interface
  */
 public class PeerCLI {
+
+    /**
+     * Flag to check if it is to close the peer
+     */
     private boolean exit = false;
 
+    /**
+     * Runnable of the peer
+     */
     public void run() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.print("> ");
+            System.out.print("$ ");
             String input = scanner.nextLine();
             handleInput(input);
             if (exit)
-                return;
+                break;
         }
+
+        Peer.getInstance().getMonitor().stop();
     }
 
     private void handleInput(String input) {
@@ -33,43 +43,43 @@ public class PeerCLI {
             case "bck":
             case "b":
                 if (args.length != 3) {
-                    System.out.println("USAGE: backup <file> <repDegree>");
+                    Node.getLogger().log(Level.CONSOLE, "USAGE: backup <file> <repDegree>");
                 } else {
                     if (!BackupCommand.execute(new File(args[1]), Integer.parseInt(args[2])))
-                        System.out.println("Could not backup the file...");
+                        Node.getLogger().log(Level.CONSOLE, "Could not backup the file...");
                     else
-                        System.out.println("File was backed up successfully!");
+                        Node.getLogger().log(Level.CONSOLE, "File was backed up successfully!");
                 }
                 break;
             case "delete":
             case "dlt":
             case "d":
                 if (args.length != 2)
-                    System.out.println("USAGE: remove <file>");
+                    Node.getLogger().log(Level.CONSOLE, "USAGE: remove <file>");
                 else {
                     if(!DeleteCommand.execute(new File(args[1])))
-                        System.out.println("Could not delete the file...");
+                        Node.getLogger().log(Level.CONSOLE, "Could not delete the file...");
                     else
-                        System.out.println("File was deleted successfully!");
+                        Node.getLogger().log(Level.CONSOLE, "File was deleted successfully!");
                 }
                 break;
             case "restore":
             case "rst":
             case "r":
                 if (args.length != 2) {
-                    System.out.println("USAGE: restore <file>");
+                    Node.getLogger().log(Level.CONSOLE, "USAGE: restore <file>");
                 } else {
                     if(!RestoreCommand.execute(new File(args[1])))
-                        System.out.println("Could not restore the file...");
+                        Node.getLogger().log(Level.CONSOLE, "Could not restore the file...");
                     else
-                        System.out.println("File was restored successfully!");
+                        Node.getLogger().log(Level.CONSOLE, "File was restored successfully!");
                 }
                 break;
             case "start":
             case "str":
             case "s":
                 if (args.length != 1)
-                    System.out.println("USAGE: start");
+                    Node.getLogger().log(Level.CONSOLE, "USAGE: start");
                 else {
                 }
                 break;
@@ -77,8 +87,12 @@ public class PeerCLI {
             case "vrf":
             case "v":
                 if (args.length != 1)
-                    System.out.println("USAGE: verification");
+                    Node.getLogger().log(Level.CONSOLE, "USAGE: verification");
                 else {
+                    if(!VerificationCommand.execute())
+                        Node.getLogger().log(Level.CONSOLE, "Could not restore the file...");
+                    else
+                        Node.getLogger().log(Level.CONSOLE, "File was restored successfully!");
                     VerificationCommand.execute();
                 }
                 break;
@@ -88,7 +102,7 @@ public class PeerCLI {
                 exit = true;
                 break;
             default:
-                System.out.println("Unknown command: " + args[0]);
+                Node.getLogger().log(Level.CONSOLE, "Unknown command: " + args[0]);
                 break;
 
         }

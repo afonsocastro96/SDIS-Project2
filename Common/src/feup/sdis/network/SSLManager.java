@@ -84,7 +84,7 @@ public class SSLManager extends Observable implements Runnable {
     public void retry() {
         retryAttempt++;
 
-        Node.getLogger().log(Level.INFO, "Retrying to connect to the server in " + ((retryAttempt - 1) * 2) + " seconds.");
+        Node.getLogger().log(Level.INFO, "Retrying to connect to the server in " + (retryAttempt * 2) + " seconds.");
 
         start();
     }
@@ -96,7 +96,7 @@ public class SSLManager extends Observable implements Runnable {
     public void run() {
         try {
             if(retryAttempt > 0) {
-                int connectDelay = (retryAttempt - 1) * 2000;
+                int connectDelay = retryAttempt * 2000;
                 if(connectDelay > 60000)
                     connectDelay = 60000;
                 Thread.sleep(connectDelay);

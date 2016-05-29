@@ -36,6 +36,10 @@ public class HasChunkParser extends ProtocolParser {
         if (!validFileId(header.get(2)))
             throw new MalformedMessageException("File ID must be an UUID");
 
-        return new HasChunkMessage(UUID.fromString(header.get(2)));
+                /* Validate chunk No */
+        if (!validChunkNo(header.get(3)))
+            throw new MalformedMessageException("Chunk Number must be an integer smaller than 1000000");
+
+        return new HasChunkMessage(UUID.fromString(header.get(2)), Integer.parseInt(header.get(3)));
     }
 }
