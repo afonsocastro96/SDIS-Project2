@@ -7,13 +7,10 @@ import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ChunkMessage;
-import feup.sdis.protocol.messages.StoredMessage;
 import feup.sdis.protocol.messages.parsers.GetChunkParser;
-import feup.sdis.protocol.messages.parsers.PutChunkParser;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Observable;

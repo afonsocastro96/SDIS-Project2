@@ -5,19 +5,18 @@ import feup.sdis.Peer;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.StoredMessage;
-import feup.sdis.protocol.messages.parsers.PutChunkParser;
+import feup.sdis.protocol.messages.OkMessage;
+import feup.sdis.protocol.messages.parsers.DeleteParser;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.UUID;
 
 /**
- * Put chunk listener
+ * Delete listener
  */
-public class PutChunkListener extends ProtocolListener {
+public class DeleteListener extends ProtocolListener {
 
     /**
      * Called when a new message is received
@@ -46,9 +45,9 @@ public class PutChunkListener extends ProtocolListener {
 
         // Validate message
         try {
-            protocolMessage = new PutChunkParser().parse(message);
+            protocolMessage = new DeleteParser().parse(message);
         } catch (MalformedMessageException e) {
-            Node.getLogger().log(Level.DEBUG, "Failed to parse PUTCHUNK message. " + e.getMessage());
+            Node.getLogger().log(Level.DEBUG, "Failed to parse DELETE message. " + e.getMessage());
             return;
         }
 
@@ -57,43 +56,20 @@ public class PutChunkListener extends ProtocolListener {
         final UUID fileId = protocolMessage.getFileId();
         if(fileId == null)
             return;
-        final int chunkNo = protocolMessage.getChunkNo();
-        if(chunkNo == -1)
-            return;
-        final byte[] body = protocolMessage.getBody();
-        if(body == null)
-            return;
 
-        // Create file directory
+        // Get file directory
         final File fileDir = new File(fileId.toString());
         if(!fileDir.exists())
-            if(!fileDir.mkdir())
-                return;
-
-        // Create chunk file
-        final File chunkFile = new File(fileId.toString() + File.separator + chunkNo + ".bin");
-        if(!chunkFile.exists())
-            try {
-                if(!chunkFile.createNewFile())
-                    return;
-            } catch (IOException e) {
-                Node.getLogger().log(Level.FATAL, "Could not create the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
-                return;
-            }
-
-        // Write the chunk to the file
-        try {
-            final FileOutputStream fileOutputStream = new FileOutputStream(chunkFile);
-            fileOutputStream.write(body);
-            fileOutputStream.close();
-        } catch (IOException e) {
-            Node.getLogger().log(Level.FATAL, "Could not write the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
             return;
-        }
+
+        // Delete all files
+        final File[] files = fileDir.listFiles();
+        for (final File f: files) f.delete();
+        fileDir.delete();
 
         // Send response to the sender
         try {
-            monitor.write(new StoredMessage(fileId, chunkNo).getBytes());
+            monitor.write(new OkMessage(protocolMessage.getHeader()).getBytes());
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
         }

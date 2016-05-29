@@ -33,9 +33,9 @@ public class DeleteParser extends ProtocolParser {
             throw new MalformedMessageException("Version must follow the following format: <n>.<m>");
 
         /* Validate file ID */
-        if (!validFileId(header.get(2)))
-            throw new MalformedMessageException("File ID must be an UUID");
+        if (!validFileId(header.get(2)) && !validFileName(header.get(2)))
+            throw new MalformedMessageException("File ID must be an UUID or a file path");
 
-        return new DeleteMessage(UUID.fromString(header.get(2)));
+        return new DeleteMessage(header.get(2));
     }
 }

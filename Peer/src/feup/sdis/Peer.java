@@ -4,6 +4,7 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLChannel;
 import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.initiators.WhoAmIInitiator;
+import feup.sdis.protocol.listeners.DeleteListener;
 import feup.sdis.protocol.listeners.GetChunkListener;
 import feup.sdis.protocol.listeners.PutChunkListener;
 
@@ -104,6 +105,7 @@ public class Peer extends Node implements Observer {
             }
 
         // Subscribe listeners
+        getInstance().getMonitor().addObserver(new DeleteListener());
         getInstance().getMonitor().addObserver(new GetChunkListener());
         getInstance().getMonitor().addObserver(new PutChunkListener());
 

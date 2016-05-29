@@ -1,6 +1,7 @@
 package feup.sdis;
 
 import feup.sdis.commands.BackupCommand;
+import feup.sdis.commands.DeleteCommand;
 import feup.sdis.commands.RestoreCommand;
 
 import java.io.File;
@@ -45,6 +46,10 @@ public class PeerCLI {
                 if (args.length != 2)
                     System.out.println("USAGE: remove <file>");
                 else {
+                    if(!DeleteCommand.execute(new File(args[1])))
+                        System.out.println("Could not delete the file...");
+                    else
+                        System.out.println("File was deleted successfully!");
                 }
                 break;
             case "restore":
