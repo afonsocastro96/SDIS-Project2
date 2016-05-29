@@ -43,6 +43,7 @@ public class VerificationCommand implements Command {
 
                 // Request the server to check if chunk is supposed to exist
                 final HasChunkInitiator hasChunkInitiator = new HasChunkInitiator(Peer.getInstance().getMonitor(), fileId, chunkNo);
+                hasChunkInitiator.setMaxRounds(100);
                 final Thread hasChunkThread = new Thread(hasChunkInitiator);
                 hasChunkThread.start();
                 while (hasChunkThread.isAlive())
