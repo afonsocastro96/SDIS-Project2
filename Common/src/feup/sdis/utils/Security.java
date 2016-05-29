@@ -1,13 +1,13 @@
 package feup.sdis.utils;
 
-import feup.sdis.Node;
-
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 /**
  * Security utilities class
@@ -79,5 +79,17 @@ public class Security {
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV));
 
         return cipher.doFinal(encrypted);
+    }
+
+    /**
+     * Calculate the checksum of a data array
+     * @param data data to check the checksum
+     * @return checksum of that data
+     */
+    public static long checksum(byte[] data) {
+        final Checksum checksum = new CRC32();
+        checksum.update(data, 0, data.length);
+
+        return checksum.getValue();
     }
 }

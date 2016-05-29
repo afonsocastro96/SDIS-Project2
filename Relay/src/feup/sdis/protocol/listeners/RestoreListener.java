@@ -8,8 +8,6 @@ import feup.sdis.network.SSLManager;
 import feup.sdis.network.SSLServer;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ChunkTotalMessage;
-import feup.sdis.protocol.messages.FileNameMessage;
-import feup.sdis.protocol.messages.OkMessage;
 import feup.sdis.protocol.messages.RestoreMessage;
 import feup.sdis.protocol.messages.parsers.RestoreParser;
 

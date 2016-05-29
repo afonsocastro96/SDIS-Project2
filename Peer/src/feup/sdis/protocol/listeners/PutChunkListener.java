@@ -7,7 +7,9 @@ import feup.sdis.network.SSLManager;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.StoredMessage;
 import feup.sdis.protocol.messages.parsers.PutChunkParser;
+import feup.sdis.utils.Security;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -70,8 +72,6 @@ public class PutChunkListener extends ProtocolListener {
             if(!fileDir.mkdirs())
                 return;
 
-        // TODO save checksum
-
         // Create chunk file
         final File chunkFile = new File(fileDir.getAbsolutePath() + File.separator + chunkNo + ".bin");
         if(!chunkFile.exists())
@@ -83,10 +83,16 @@ public class PutChunkListener extends ProtocolListener {
                 return;
             }
 
+        // Create checksum
+        long checksum = Security.checksum(body);
+
         // Write the chunk to the file
         try {
             final FileOutputStream fileOutputStream = new FileOutputStream(chunkFile);
-            fileOutputStream.write(body);
+            final DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
+            dataOutputStream.writeLong(checksum);
+            dataOutputStream.write(body);
+            dataOutputStream.close();
             fileOutputStream.close();
         } catch (IOException e) {
             Node.getLogger().log(Level.FATAL, "Could not write the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());

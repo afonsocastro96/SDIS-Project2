@@ -4,8 +4,6 @@ import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.DeleteMessage;
 import feup.sdis.protocol.messages.ProtocolMessage;
 
-import java.util.UUID;
-
 /**
  * Delete parser
  */

@@ -7,14 +7,10 @@ import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.network.SSLServer;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
-import feup.sdis.protocol.messages.ChunkTotalMessage;
 import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.RestoreMessage;
 import feup.sdis.protocol.messages.parsers.HasChunkParser;
-import feup.sdis.protocol.messages.parsers.RestoreParser;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Observable;
 import java.util.UUID;
 

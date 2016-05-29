@@ -1,8 +1,6 @@
 package feup.sdis.commands;
 
-import feup.sdis.Node;
 import feup.sdis.Peer;
-import feup.sdis.logger.Level;
 import feup.sdis.protocol.initiators.HasChunkInitiator;
 
 import java.io.File;

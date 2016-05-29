@@ -12,7 +12,7 @@ import java.util.Scanner;
 /**
  * Peer client interface
  */
-public class PeerCLI {
+public class PeerCLI implements Runnable {
 
     /**
      * Flag to check if it is to close the peer
@@ -23,24 +23,24 @@ public class PeerCLI {
      * Runnable of the peer
      */
     public void run() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
+        final Scanner scanner = new Scanner(System.in);
+        while (!exit) {
             System.out.print("$ ");
-            String input = scanner.nextLine();
-            handleInput(input);
-            if (exit)
-                break;
+            handleInput(scanner.nextLine());
         }
 
         Peer.getInstance().getMonitor().stop();
     }
 
+    /**
+     * Handle the user input
+     * @param input input from the user
+     */
     private void handleInput(String input) {
-        String[] args = input.split(" ");
-        String command = args[0].toLowerCase();
+        final String[] args = input.split(" ");
+        final String command = args[0].toLowerCase();
         switch (command) {
             case "backup":
-            case "bck":
             case "b":
                 if (args.length != 3) {
                     Node.getLogger().log(Level.CONSOLE, "USAGE: backup <file> <repDegree>");
@@ -52,7 +52,6 @@ public class PeerCLI {
                 }
                 break;
             case "delete":
-            case "dlt":
             case "d":
                 if (args.length != 2)
                     Node.getLogger().log(Level.CONSOLE, "USAGE: remove <file>");
@@ -64,7 +63,6 @@ public class PeerCLI {
                 }
                 break;
             case "restore":
-            case "rst":
             case "r":
                 if (args.length != 2) {
                     Node.getLogger().log(Level.CONSOLE, "USAGE: restore <file>");
@@ -75,16 +73,7 @@ public class PeerCLI {
                         Node.getLogger().log(Level.CONSOLE, "File was restored successfully!");
                 }
                 break;
-            case "start":
-            case "str":
-            case "s":
-                if (args.length != 1)
-                    Node.getLogger().log(Level.CONSOLE, "USAGE: start");
-                else {
-                }
-                break;
             case "verify":
-            case "vrf":
             case "v":
                 if (args.length != 1)
                     Node.getLogger().log(Level.CONSOLE, "USAGE: verify");
@@ -97,7 +86,6 @@ public class PeerCLI {
                 }
                 break;
             case "exit":
-            case "ext":
             case "e":
                 exit = true;
                 break;
@@ -106,9 +94,5 @@ public class PeerCLI {
                 break;
 
         }
-    }
-
-    private void backup() {
-
     }
 }

@@ -8,7 +8,6 @@ import feup.sdis.protocol.messages.ChunkTotalMessage;
 import feup.sdis.protocol.messages.parsers.ChunkTotalParser;
 
 import java.util.Observable;
-import java.util.UUID;
 
 /**
  * Chunk total listener

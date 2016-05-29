@@ -8,7 +8,9 @@ import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.messages.ChunkMessage;
 import feup.sdis.protocol.messages.parsers.GetChunkParser;
+import feup.sdis.utils.Security;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,9 +64,6 @@ public class GetChunkListener extends ProtocolListener {
         final int chunkNo = protocolMessage.getChunkNo();
         if(chunkNo == -1)
             return;
-        final byte[] body = protocolMessage.getBody();
-        if(body == null)
-            return;
 
         // Create file directory
         final File fileDir = new File("data" + File.separator + fileId.toString());
@@ -77,20 +76,32 @@ public class GetChunkListener extends ProtocolListener {
             return;
 
         // Read the chunk
+        final byte[] body;
         final byte[] buffer = new byte[Protocol.CHUNK_SIZE * 2];
         final int size;
+        final long checksum;
         try {
             final FileInputStream fileInputStream = new FileInputStream(chunkFile);
-            size = fileInputStream.read(buffer);
+            final DataInputStream dataInputStream = new DataInputStream(fileInputStream);
+            checksum = dataInputStream.readLong();
+            size = dataInputStream.read(buffer);
+            body = Arrays.copyOf(buffer, size);
             fileInputStream.close();
         } catch (IOException e) {
             Node.getLogger().log(Level.FATAL, "Could not read the chunk number " + chunkNo + " of the file " + fileId + ". " + e.getMessage());
             return;
         }
 
+        // Validate the checksum
+        final long currentChecksum = Security.checksum(body);
+        if(currentChecksum != checksum) {
+            chunkFile.delete();
+            return;
+        }
+
         // Send response to the sender
         try {
-            monitor.write(new ChunkMessage(fileId, chunkNo, Arrays.copyOf(buffer, size)).getBytes());
+            monitor.write(new ChunkMessage(fileId, chunkNo, body).getBytes());
         } catch (IOException e) {
             Node.getLogger().log(Level.ERROR, "Could not send the message. " + e.getMessage());
         }

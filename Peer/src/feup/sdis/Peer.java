@@ -98,9 +98,7 @@ public class Peer extends Node implements Observer {
         getLogger().log(Level.INFO, "Service started.");
 
         // Start the client interface
-        new Thread(() -> {
-            new PeerCLI().run();
-        }).start();
+        new Thread(PeerCLI::new).start();
     }
 
     /**

@@ -6,27 +6,18 @@ import feup.sdis.database.DatabaseApi;
 import feup.sdis.logger.Level;
 import feup.sdis.network.SSLManager;
 import feup.sdis.network.SSLServer;
-import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.initiators.DeleteInitiator;
 import feup.sdis.protocol.initiators.ProtocolInitiator;
-import feup.sdis.protocol.messages.ChunkMessage;
 import feup.sdis.protocol.messages.DeleteMessage;
 import feup.sdis.protocol.messages.OkMessage;
-import feup.sdis.protocol.messages.RestoreMessage;
 import feup.sdis.protocol.messages.parsers.DeleteParser;
-import feup.sdis.protocol.messages.parsers.GetChunkParser;
-import feup.sdis.utils.Security;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.UUID;
 
 /**
  * Delete listener

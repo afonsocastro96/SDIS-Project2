@@ -10,9 +10,7 @@ import feup.sdis.protocol.Protocol;
 import feup.sdis.protocol.exceptions.MalformedMessageException;
 import feup.sdis.protocol.initiators.GetChunkInitiator;
 import feup.sdis.protocol.initiators.ProtocolInitiator;
-import feup.sdis.protocol.initiators.PutChunkInitiator;
 import feup.sdis.protocol.messages.ChunkMessage;
-import feup.sdis.protocol.messages.StoredTotalMessage;
 import feup.sdis.protocol.messages.parsers.GetChunkParser;
 import feup.sdis.utils.Security;
 
