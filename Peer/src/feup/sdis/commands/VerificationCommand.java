@@ -22,7 +22,7 @@ public class VerificationCommand implements Command {
         final File f = new File("data");
         final File[] folders = f.listFiles();
         if (folders == null)
-            return false;
+            return true;
         File[] chunks;
 
         // Check all chunks

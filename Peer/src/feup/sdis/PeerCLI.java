@@ -92,7 +92,7 @@ public class PeerCLI {
                     if(!VerificationCommand.execute())
                         Node.getLogger().log(Level.CONSOLE, "Could not verify the chunks on the system...");
                     else
-                        Node.getLogger().log(Level.CONSOLE, "File were checked successfully!");
+                        Node.getLogger().log(Level.CONSOLE, "Chunks were checked successfully!");
                     VerificationCommand.execute();
                 }
                 break;
