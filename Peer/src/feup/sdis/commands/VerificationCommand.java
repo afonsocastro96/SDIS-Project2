@@ -63,7 +63,7 @@ public class VerificationCommand implements Command {
                     continue;
                 }
                 final long currentChecksum = Security.checksum(body);
-                if(currentChecksum != checksum) {
+                if (currentChecksum != checksum) {
                     chunk.delete();
                     continue;
                 }
@@ -80,9 +80,9 @@ public class VerificationCommand implements Command {
                     }
 
                 // The file doesn't exist in the system, delete it
-                if (hasChunkInitiator.hasReceivedResponse())
-                    continue;
-                chunk.delete();
+                Node.getLogger().log(Level.WARNING, "Has received a response? " + hasChunkInitiator.hasReceivedResponse());
+                if (!hasChunkInitiator.hasReceivedResponse())
+                    chunk.delete();
             }
 
             chunks = folder.listFiles();
