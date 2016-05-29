@@ -83,16 +83,16 @@ public class PeerCLI {
                 else {
                 }
                 break;
-            case "verification":
+            case "verify":
             case "vrf":
             case "v":
                 if (args.length != 1)
-                    Node.getLogger().log(Level.CONSOLE, "USAGE: verification");
+                    Node.getLogger().log(Level.CONSOLE, "USAGE: verify");
                 else {
                     if(!VerificationCommand.execute())
-                        Node.getLogger().log(Level.CONSOLE, "Could not restore the file...");
+                        Node.getLogger().log(Level.CONSOLE, "Could not verify the chunks on the system...");
                     else
-                        Node.getLogger().log(Level.CONSOLE, "File was restored successfully!");
+                        Node.getLogger().log(Level.CONSOLE, "File were checked successfully!");
                     VerificationCommand.execute();
                 }
                 break;
