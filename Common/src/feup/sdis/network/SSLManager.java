@@ -20,9 +20,9 @@ public class SSLManager extends Observable implements Runnable {
     private final AtomicBoolean running;
 
     /**
-     * Delay in millis to restart monitoring a channel
+     * Retry attempt
      */
-    private int retryDelay;
+    private int retryAttempt;
 
     /**
      * Channel to be monitored
@@ -36,7 +36,7 @@ public class SSLManager extends Observable implements Runnable {
      */
     public SSLManager(final SSLChannel channel) {
         this.running = new AtomicBoolean();
-        this.retryDelay = 0;
+        this.retryAttempt = 0;
         this.channel = channel;
     }
 
@@ -49,11 +49,11 @@ public class SSLManager extends Observable implements Runnable {
     }
 
     /**
-     * Get the retry delay
-     * @return retry delay
+     * Get the retry attempt
+     * @return retry attempt
      */
-    public int getRetryDelay() {
-        return retryDelay;
+    public int getRetryAttempt() {
+        return retryAttempt;
     }
 
     /**
@@ -82,14 +82,9 @@ public class SSLManager extends Observable implements Runnable {
      * Retry to monitor the channel
      */
     public void retry() {
-        if(retryDelay == 0)
-            retryDelay = 1000;
-        else if (retryDelay < 60000)
-            retryDelay *= 2;
-        else
-            retryDelay = 60000;
+        retryAttempt++;
 
-        Node.getLogger().log(Level.INFO, "Retrying to connect to the server in " + (retryDelay / 1000) + " seconds.");
+        Node.getLogger().log(Level.INFO, "Retrying to connect to the server in " + ((retryAttempt - 1) * 2) + " seconds.");
 
         start();
     }
@@ -100,7 +95,12 @@ public class SSLManager extends Observable implements Runnable {
     @Override
     public void run() {
         try {
-            Thread.sleep(retryDelay);
+            if(retryAttempt > 0) {
+                int connectDelay = (retryAttempt - 1) * 2000;
+                if(connectDelay > 60000)
+                    connectDelay = 60000;
+                Thread.sleep(connectDelay);
+            }
         } catch (InterruptedException ignored) {
         }
 
@@ -116,7 +116,7 @@ public class SSLManager extends Observable implements Runnable {
             notifyObservers(objects);
             return;
         }
-        retryDelay = 0;
+        retryAttempt = 0;
         running.set(true);
 
         // Read messages from the channel

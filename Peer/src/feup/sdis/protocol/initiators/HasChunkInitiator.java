@@ -7,26 +7,27 @@ import feup.sdis.protocol.messages.HasChunkMessage;
 import java.util.UUID;
 
 /**
- * Created by Afonso on 29/05/2016.
+ * Has chunk initiator
  */
 public class HasChunkInitiator extends ProtocolInitiator {
 
-    UUID fileId;
+    /**
+     * File id to check if we are supposed to have it
+     */
+    private final UUID fileId;
 
     /**
      * Constructor of ProtocolInitiator
      *
      * @param monitor monitor of this initiator
      */
-    public HasChunkInitiator(SSLManager monitor, UUID fileId) {
+    public HasChunkInitiator(final SSLManager monitor, final UUID fileId) {
         super(monitor);
         this.fileId = fileId;
 
-        message = new HasChunkMessage(fileId);
+        message = new HasChunkMessage(this.fileId);
         listener = new OkListener(monitor.getChannel().getHost(),
                 monitor.getChannel().getPort(),
                 message.getHeader());
-
-        
     }
 }

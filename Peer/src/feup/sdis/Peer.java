@@ -91,7 +91,7 @@ public class Peer extends Node implements Observer {
         // Send our UUID
         while (!getInstance().getMonitor().isRunning()) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10);
             } catch (InterruptedException ignored) {
             }
         }
@@ -256,7 +256,7 @@ public class Peer extends Node implements Observer {
             Node.getLogger().log(Level.INFO, monitor.getChannel().getHost() + ":" + monitor.getChannel().getPort() + " has disconnected.");
         } else if (objects[2] instanceof SocketException) {
         } else if (objects[2] instanceof IOException) {
-            Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) arg).getMessage() + ".");
+            Node.getLogger().log(Level.INFO, "Could not read data from host. " + ((IOException) objects[2]).getMessage() + ".");
         } else {
             return;
         }
@@ -264,20 +264,23 @@ public class Peer extends Node implements Observer {
         monitor.retry();
 
         // Send our UUID
-        new Thread(() -> {
-            try {
-                Thread.sleep(monitor.getRetryDelay() + 1000);
-            } catch (InterruptedException ignored) {
-            }
-            if(!getInstance().getMonitor().isRunning()) return;
-            final WhoAmIInitiator initiator = new WhoAmIInitiator(Peer.getInstance().getMonitor());
-            final Thread whoAmIThread = new Thread(initiator);
-            whoAmIThread.start();
-            while (whoAmIThread.isAlive())
-                try {
-                    whoAmIThread.join();
-                } catch (InterruptedException e) {
+        if(monitor.getRetryAttempt() == 1) {
+            new Thread(() -> {
+                while (!getInstance().getMonitor().isRunning()) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ignored) {
+                    }
                 }
-        }).start();
+                final WhoAmIInitiator initiator = new WhoAmIInitiator(Peer.getInstance().getMonitor());
+                final Thread whoAmIThread = new Thread(initiator);
+                whoAmIThread.start();
+                while (whoAmIThread.isAlive())
+                    try {
+                        whoAmIThread.join();
+                    } catch (InterruptedException e) {
+                    }
+            }).start();
+        }
     }
 }
