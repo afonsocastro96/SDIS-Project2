@@ -262,5 +262,22 @@ public class Peer extends Node implements Observer {
         }
 
         monitor.retry();
+
+        // Send our UUID
+        new Thread(() -> {
+            try {
+                Thread.sleep(monitor.getRetryDelay() + 1000);
+            } catch (InterruptedException ignored) {
+            }
+            if(!getInstance().getMonitor().isRunning()) return;
+            final WhoAmIInitiator initiator = new WhoAmIInitiator(Peer.getInstance().getMonitor());
+            final Thread whoAmIThread = new Thread(initiator);
+            whoAmIThread.start();
+            while (whoAmIThread.isAlive())
+                try {
+                    whoAmIThread.join();
+                } catch (InterruptedException e) {
+                }
+        }).start();
     }
 }

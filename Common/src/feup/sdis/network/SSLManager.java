@@ -49,6 +49,14 @@ public class SSLManager extends Observable implements Runnable {
     }
 
     /**
+     * Get the retry delay
+     * @return retry delay
+     */
+    public int getRetryDelay() {
+        return retryDelay;
+    }
+
+    /**
      * Check if the SSLManager is running
      * @return true if is running
      */
